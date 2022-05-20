@@ -1,0 +1,17 @@
+.ModalBttn {
+  display: block;
+  padding: 10px;
+  margin: 10px;
+}
+.ModalBttn Button {
+  margin-right: 10px;
+}
+.modal {
+  margin-top: 10%;
+}
+
+.modalBody {
+  border: 3px transparent rgb(175, 148, 148);
+  border-radius: 5px;
+  background-color: whitesmoke;
+}

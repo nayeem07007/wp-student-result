@@ -1,0 +1,15 @@
+.container {
+  background-color: rgba(215, 230, 236, 0.801);
+  padding: 5%;
+  border: 3px transparent grey;
+  border-radius: 1%;
+}
+
+.radioContainer {
+  padding: 10px;
+  margin: 10px;
+}
+.radio input {
+  padding: 10px;
+  margin: 10px;
+}

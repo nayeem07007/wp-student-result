@@ -1,0 +1,58 @@
+.studentForm {
+  color: darkcyan;
+}
+
+.formHeading {
+  padding: 2% 0.2%;
+}
+
+.fields {
+  font-family: sans-serif;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  align-content: center;
+  margin: 0.5% 0%;
+}
+h6 {
+  color: red;
+}
+.tagContainer {
+  min-width: 60%;
+  max-width: 75%;
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 30px;
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding: 10px;
+}
+.tag {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border: 1px solid gray;
+  border-radius: 5px;
+  height: 25px;
+  margin: 2px 5px 2px 0px;
+  color: black;
+}
+
+.tagContainer input {
+  border: none;
+  flex: 1;
+  outline: none;
+  padding: 5;
+  background: white;
+  color: black;
+}
+.tag span {
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.bttn {
+  margin: 10px;
+}
+
