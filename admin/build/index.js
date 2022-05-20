@@ -7525,6 +7525,8 @@ const FieldSelector = props => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
+  const [isExporting, setIsExporting] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const [isSaving, setIsSaving] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("Save");
   const [fields, setFields] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
   const [theads, setTheads] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([{
     label: "sl",
@@ -7563,6 +7565,7 @@ const FieldSelector = props => {
   const [resLength, setReslength] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
   const [subjects, setSubjects] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
   const [exams, setExams] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [deleting, setDeleting] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
   const subOpts = subjects.map((sub, i) => ({
     value: sub,
     label: sub
@@ -7657,6 +7660,7 @@ const FieldSelector = props => {
 
   const saveChanges = () => {
     // console.log("saved Changes!!!");
+    setIsSaving("Saving...");
     const headers = {
       "Content-Type": "application/json",
       Accept: "application/json"
@@ -7666,8 +7670,14 @@ const FieldSelector = props => {
     }).then(response => {
       console.log(response.data);
       setResults(response.data);
+      setTimeout(() => {
+        setIsSaving("Saved");
+      }, 1000);
+      setTimeout(() => {
+        setIsSaving("Save");
+        setChanges(false);
+      }, 1800);
     }).catch(error => console.log(error));
-    setChanges(false);
   };
 
   const saveSelectedOpts = selectedOptions => {
@@ -7690,6 +7700,24 @@ const FieldSelector = props => {
         [Cap("exam")]: Cap(opt["value"])
       });
     });
+  };
+
+  const deleteResult = res => {
+    setDeleting(true);
+    console.log("delete clicked!!!");
+    console.log(res);
+    const headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    };
+    axios__WEBPACK_IMPORTED_MODULE_9___default().post(api_base_url + "/wp-json/sr/v1/delete/result", JSON.stringify(res), {
+      headers: headers
+    }).then(response => {
+      console.log(response);
+      const newResults = results.filter(results => results !== res);
+      setResults(newResults);
+      setDeleting(false);
+    }).catch(error => console.log(error));
   };
 
   console.log(results);
@@ -7738,14 +7766,20 @@ const FieldSelector = props => {
   }))), theads.length > 0 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
     className: "p-2"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_bootstrap_Button__WEBPACK_IMPORTED_MODULE_13__["default"], {
-    class: _FieldSelector_module_css__WEBPACK_IMPORTED_MODULE_1__["default"].bttn,
+    className: _FieldSelector_module_css__WEBPACK_IMPORTED_MODULE_1__["default"].bttn,
     variant: "outline-success",
     size: "md"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_csv__WEBPACK_IMPORTED_MODULE_7__.CSVLink, {
+    onClick: () => {
+      setIsExporting(true);
+      setTimeout(() => {
+        setIsExporting(false);
+      }, 1000);
+    },
     data: studentsData,
     headers: theads,
     filename: "result.csv"
-  }, "Export CSV")), " ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_bootstrap_Button__WEBPACK_IMPORTED_MODULE_13__["default"], {
+  }, isExporting ? "Exporting CSV..." : "Export CSV")), " ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_bootstrap_Button__WEBPACK_IMPORTED_MODULE_13__["default"], {
     class: _FieldSelector_module_css__WEBPACK_IMPORTED_MODULE_1__["default"].bttn,
     variant: "outline-success",
     size: "md",
@@ -7755,7 +7789,7 @@ const FieldSelector = props => {
     variant: "outline-success",
     size: "md",
     onClick: saveChanges
-  }, "Save Changes"), " "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+  }, isSaving + " ", " Changes"), " "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
     className: "table"
   }, columns.length > 0 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_bootstrap_table_next__WEBPACK_IMPORTED_MODULE_5__["default"], {
     bootstrap4: true,
@@ -7774,12 +7808,18 @@ const FieldSelector = props => {
     bordered: true,
     hover: true
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("thead", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", null, results[0].map(result => Object.values(result).toString() != "" && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", {
-    key: Object.keys(result).toString()
-  }, Cap(Object.keys(result).toString()))))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("tbody", null, results.map(res => /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", {
+    key: Object.keys(result).toString() + Object.keys(result).toString()
+  }, Cap(Object.keys(result).toString()))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", null, "Action"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("tbody", null, results.map(res => /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", {
     key: Object.values(res[0]).toString()
   }, res.map(result => Object.values(result).toString() != "" && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", {
-    key: Object.values(result).toString()
-  }, Object.values(result).toString())))))))));
+    key: Object.values(result).toString() + Object.keys(result).toString()
+  }, Object.values(result).toString())), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", {
+    type: "submit",
+    className: "btn-danger",
+    onClick: () => {
+      deleteResult(res);
+    }
+  }, deleting ? "Deleting..." : "Delete")))))))));
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (FieldSelector);
@@ -7811,13 +7851,13 @@ const FileInput = props => {
   // const [isFilled, SetIsFilled] = useState(props.filled);
   const isFilled = props.filled;
   const url = props.url;
-  const fileUpload = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(); // const [file, setFile] = useState("");
-
-  console.log(props.credentials); // console.log(props.filled);
+  const fileUpload = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
+  const [isImporting, setIsImporting] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false); // console.log(props.credentials);
+  // console.log(props.filled);
 
   const submitFile = e => {
     e.preventDefault();
-    console.log("Import Clicked!!!");
+    setIsImporting(true);
 
     if (fileUpload.current.files.length > 0) {
       var formData = new FormData();
@@ -7827,7 +7867,10 @@ const FileInput = props => {
       formData.append("title", file.name);
       let headers = {};
       headers["Content-Disposition"] = "form-data; filename='" + file.name + "'";
-      axios__WEBPACK_IMPORTED_MODULE_1___default().post(url, formData, headers).then(response => console.log(response)).catch(error => console.log(error));
+      axios__WEBPACK_IMPORTED_MODULE_1___default().post(url, formData, headers).then(response => {
+        console.log(response);
+        setIsImporting(false);
+      }).catch(error => console.log(error));
     }
   };
 
@@ -7850,7 +7893,7 @@ const FileInput = props => {
   }, props.filled == true && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_bootstrap_Button__WEBPACK_IMPORTED_MODULE_3__["default"], {
     variant: "outline-success",
     onClick: submitFile
-  }, "Import"), isFilled == false && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_bootstrap_Button__WEBPACK_IMPORTED_MODULE_3__["default"], {
+  }, isImporting ? "Importing..." : "Import"), isFilled == false && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_bootstrap_Button__WEBPACK_IMPORTED_MODULE_3__["default"], {
     disabled: true,
     variant: "outline-success",
     onClick: submitFile
@@ -8055,6 +8098,7 @@ const RegForm = props => {
   const [fields, setFields] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(["name", "roll"]);
   const [formdata, setFormdata] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
   const [defaultVal, setDefaultVal] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [isSaving, setIsSaving] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
 
   const Cap = str => {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -8083,6 +8127,7 @@ const RegForm = props => {
 
   const submitForm = e => {
     e.preventDefault();
+    setIsSaving(true);
     console.log("submit clicked!!!");
     const headers = {
       "Content-Type": "application/json",
@@ -8092,8 +8137,11 @@ const RegForm = props => {
       headers: headers
     }) // .then((response) => console.log(fields))
     .then(response => {
-      setFields([...fields]);
-      setDefaultVal([""]);
+      setTimeout(() => {
+        setFields([...fields]);
+        setDefaultVal([""]);
+        setIsSaving(false);
+      }, 1000);
     }).catch(error => console.log(error));
   };
 
@@ -8138,7 +8186,7 @@ const RegForm = props => {
     letiant: "primary",
     id: "submitBtn",
     onClick: submitForm
-  }, "Save")));
+  }, isSaving ? "Saving..." : "Save")));
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RegForm);

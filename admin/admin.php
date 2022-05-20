@@ -24,6 +24,11 @@ add_action( 'rest_api_init',  function(){
         'callback' => 'sr_show_search_result'
     ]);
 
+    register_rest_route( 'sr/v1', 'delete/result', [
+        'methods' => 'POST',
+        'callback' => 'sr_delete_result'
+    ]);
+
     register_rest_route( 'sr/v1', 'results', [
         'methods' => 'POST',
         'callback' => 'sr_save_result'
@@ -273,6 +278,25 @@ function sr_show_result()
  * @since 1.0.0
  *
  */
+function sr_delete_result( $req )
+{
+    global $wpdb;
+    $result_tbl = $wpdb->prefix . 'std_res_beta_result';
+    $field = 'res_info';
+    $request = $req->get_params();
+    $delete = $wpdb->delete( $result_tbl, array( $field => json_encode($request) ) );
+
+    return $delete;
+}
+
+
+/**
+ * 
+ * React Rest API for Showing Search Results.
+ *
+ * @since 1.0.0
+ *
+ */
 function sr_show_search_result( $req )
 {
     global $wpdb;
@@ -383,7 +407,6 @@ function sr_save_result($req)
     global $wpdb;
     $requests = $req->get_params();
     $sub_tbl = $wpdb->prefix . 'std_res_beta_subject'; 
-    // $items = count($requests);
     $totalInserted = 0;
 
     $subs = $wpdb->get_results( $wpdb->prepare( "SELECT subject_name FROM {$sub_tbl}" ));
@@ -395,11 +418,7 @@ function sr_save_result($req)
 
     $credentials = get_option('credentials');
     $grade_tbl = $wpdb->prefix . 'std_res_beta_grade'; 
-
-
     $grades = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$grade_tbl}" ));
-
-    // return $grades;
     
     foreach($requests as $request){
         $sub_marks = [];
@@ -484,7 +503,6 @@ function sr_save_imported_result($req)
     $grade_tbl = $wpdb->prefix . 'std_res_beta_grade';
     $request = $req->get_params();
 
-//
     $sub_data = [];
     $subs = $wpdb->get_results( $wpdb->prepare( "SELECT subject_name FROM {$sub_tbl} " ));
     
@@ -495,8 +513,7 @@ function sr_save_imported_result($req)
 
     $grades = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$grade_tbl}" ));
 
-    // return $grades;
-//
+   
     if(isset($request['title'])){
 
         $filetype = wp_check_filetype($request['title']);
@@ -738,7 +755,6 @@ function sr_search_students($req)
                 $row = $dt->$obj;
             };
         }
-
         if($row == $request['val']){
             $data [] = $r;
         }

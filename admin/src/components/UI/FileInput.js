@@ -8,14 +8,14 @@ const FileInput = (props) => {
   const isFilled = props.filled;
   const url = props.url;
   const fileUpload = useRef();
-  // const [file, setFile] = useState("");
+  const [isImporting, setIsImporting] = useState(false);
 
-  console.log(props.credentials);
+  // console.log(props.credentials);
   // console.log(props.filled);
 
   const submitFile = (e) => {
     e.preventDefault();
-    console.log("Import Clicked!!!");
+    setIsImporting(true);
 
     if (fileUpload.current.files.length > 0) {
       var formData = new FormData();
@@ -32,7 +32,10 @@ const FileInput = (props) => {
 
       axios
         .post(url, formData, headers)
-        .then((response) => console.log(response))
+        .then((response) => {
+          console.log(response);
+          setIsImporting(false);
+        })
         .catch((error) => console.log(error));
     }
   };
@@ -56,7 +59,7 @@ const FileInput = (props) => {
           <div className="custom-file">
             {props.filled == true && (
               <Button variant="outline-success" onClick={submitFile}>
-                Import
+                {isImporting ? "Importing..." : "Import"}
               </Button>
             )}
             {isFilled == false && (

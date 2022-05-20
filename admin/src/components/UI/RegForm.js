@@ -11,6 +11,7 @@ const RegForm = (props) => {
   const [fields, setFields] = useState(["name", "roll"]);
   const [formdata, setFormdata] = useState([]);
   const [defaultVal, setDefaultVal] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
 
   const Cap = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -37,6 +38,7 @@ const RegForm = (props) => {
 
   const submitForm = (e) => {
     e.preventDefault();
+    setIsSaving(true);
     console.log("submit clicked!!!");
 
     const headers = {
@@ -54,8 +56,11 @@ const RegForm = (props) => {
       )
       // .then((response) => console.log(fields))
       .then((response) => {
-        setFields([...fields]);
-        setDefaultVal([""]);
+        setTimeout(() => {
+          setFields([...fields]);
+          setDefaultVal([""]);
+          setIsSaving(false);
+        }, 1000);
       })
       .catch((error) => console.log(error));
   };
@@ -117,7 +122,7 @@ const RegForm = (props) => {
             id="submitBtn"
             onClick={submitForm}
           >
-            Save
+            {isSaving ? "Saving..." : "Save"}
           </Button>
         )}
       </Container>

@@ -19,6 +19,8 @@ const FieldSelector = (props) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
+  const [isExporting, setIsExporting] = useState(false);
+  const [isSaving, setIsSaving] = useState("Save");
   const [fields, setFields] = useState([]);
   const [theads, setTheads] = useState([
     { label: "sl", key: "sl" },
@@ -45,6 +47,7 @@ const FieldSelector = (props) => {
   const [resLength, setReslength] = useState("");
   const [subjects, setSubjects] = useState([]);
   const [exams, setExams] = useState([]);
+  const [deleting, setDeleting] = useState(false);
 
   const subOpts = subjects.map((sub, i) => ({ value: sub, label: sub }));
   const examOpts = exams.map((exam, i) => ({ value: exam, label: exam }));
@@ -142,6 +145,7 @@ const FieldSelector = (props) => {
 
   const saveChanges = () => {
     // console.log("saved Changes!!!");
+    setIsSaving("Saving...");
     const headers = {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -158,10 +162,15 @@ const FieldSelector = (props) => {
       .then((response) => {
         console.log(response.data);
         setResults(response.data);
+        setTimeout(() => {
+          setIsSaving("Saved");
+        }, 1000);
+        setTimeout(() => {
+          setIsSaving("Save");
+          setChanges(false);
+        }, 1800);
       })
       .catch((error) => console.log(error));
-
-    setChanges(false);
   };
 
   const saveSelectedOpts = (selectedOptions) => {
@@ -182,6 +191,31 @@ const FieldSelector = (props) => {
       setFields([...fields, Cap("exam")]);
       setTableData({ ...tableData, [Cap("exam")]: Cap(opt["value"]) });
     });
+  };
+  const deleteResult = (res) => {
+    setDeleting(true);
+    console.log("delete clicked!!!");
+    console.log(res);
+    const headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    };
+
+    axios
+      .post(
+        api_base_url + "/wp-json/sr/v1/delete/result",
+        JSON.stringify(res),
+        {
+          headers: headers,
+        }
+      )
+      .then((response) => {
+        console.log(response);
+        const newResults = results.filter((results) => results !== res);
+        setResults(newResults);
+        setDeleting(false);
+      })
+      .catch((error) => console.log(error));
   };
 
   console.log(results);
@@ -244,13 +278,23 @@ const FieldSelector = (props) => {
         </div>
         {theads.length > 0 && (
           <div className="p-2">
-            <Button class={classes.bttn} variant="outline-success" size="md">
+            <Button
+              className={classes.bttn}
+              variant="outline-success"
+              size="md"
+            >
               <CSVLink
+                onClick={() => {
+                  setIsExporting(true);
+                  setTimeout(() => {
+                    setIsExporting(false);
+                  }, 1000);
+                }}
                 data={studentsData}
                 headers={theads}
                 filename="result.csv"
               >
-                Export CSV
+                {isExporting ? "Exporting CSV..." : "Export CSV"}
               </CSVLink>
             </Button>{" "}
             <Button
@@ -268,7 +312,7 @@ const FieldSelector = (props) => {
                 size="md"
                 onClick={saveChanges}
               >
-                Save Changes
+                {isSaving + " "} Changes
               </Button>
             )}{" "}
           </div>
@@ -294,11 +338,17 @@ const FieldSelector = (props) => {
                   {results[0].map(
                     (result) =>
                       Object.values(result).toString() != "" && (
-                        <th key={Object.keys(result).toString()}>
+                        <th
+                          key={
+                            Object.keys(result).toString() +
+                            Object.keys(result).toString()
+                          }
+                        >
                           {Cap(Object.keys(result).toString())}
                         </th>
                       )
                   )}
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -307,11 +357,27 @@ const FieldSelector = (props) => {
                     {res.map(
                       (result) =>
                         Object.values(result).toString() != "" && (
-                          <td key={Object.values(result).toString()}>
+                          <td
+                            key={
+                              Object.values(result).toString() +
+                              Object.keys(result).toString()
+                            }
+                          >
                             {Object.values(result).toString()}
                           </td>
                         )
                     )}
+                    <td>
+                      <button
+                        type="submit"
+                        className="btn-danger"
+                        onClick={() => {
+                          deleteResult(res);
+                        }}
+                      >
+                        {deleting ? "Deleting..." : "Delete"}
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
