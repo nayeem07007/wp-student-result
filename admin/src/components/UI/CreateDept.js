@@ -64,9 +64,9 @@ const CreateDept = (props) => {
     <Fragment>
       <div className={ModalClasses.ModalBttn}>
         <Button variant="primary" onClick={() => setShow(true)}>
-          Create Depertments
+          Create Departments
         </Button>
-        Assign new depertments to save it and maintain data by depertments.
+        Assign new departments to save it and maintain data by departments.
       </div>
 
       <Modal
@@ -79,7 +79,7 @@ const CreateDept = (props) => {
         <div className={ModalClasses.modalBody}>
           <Modal.Header closeButton>
             <Modal.Title id="example-custom-modal-styling-title">
-              Create Depertments
+              Create Departments
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -87,7 +87,7 @@ const CreateDept = (props) => {
               {/* <h4>Create Depertments</h4> */}
               <div className={classes.fields}>
                 <h6>
-                  Please, Insert your required Depertments name and press Enter.
+                  Please, Insert your required Departments name and press Enter.
                   Click the cross button to remove it.
                 </h6>
 

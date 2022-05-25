@@ -92,7 +92,7 @@ const ChooseCredentials = (props) => {
       <Container fluid="md">
         <h4>Select Credentials</h4>
         <div className={classes.credentials}>
-          <label>Depertment</label>
+          <label>Department</label>
           <select
             onChange={saveDeptCredentials}
             className="browser-default custom-select"

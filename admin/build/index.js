@@ -7330,7 +7330,7 @@ const ChooseCredentials = props => {
     fluid: "md"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("h4", null, "Select Credentials"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
     className: _ChooseCredentials_module_css__WEBPACK_IMPORTED_MODULE_1__["default"].credentials
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("label", null, "Depertment"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("select", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("label", null, "Department"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("select", {
     onChange: saveDeptCredentials,
     className: "browser-default custom-select"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("option", null, " "), deptOpts && deptOpts.map((opt, i) => /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("option", {
@@ -7437,7 +7437,7 @@ const CreateDept = props => {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_bootstrap_Button__WEBPACK_IMPORTED_MODULE_5__["default"], {
     variant: "primary",
     onClick: () => setShow(true)
-  }, "Create Depertments"), "Assign new depertments to save it and maintain data by depertments."), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_bootstrap_Modal__WEBPACK_IMPORTED_MODULE_6__["default"], {
+  }, "Create Depertments"), "Assign new departments to save it and maintain data by departments."), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_bootstrap_Modal__WEBPACK_IMPORTED_MODULE_6__["default"], {
     className: _Modal_module_css__WEBPACK_IMPORTED_MODULE_2__["default"].modal,
     show: show,
     onHide: () => setShow(false),
@@ -7449,11 +7449,11 @@ const CreateDept = props => {
     closeButton: true
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_bootstrap_Modal__WEBPACK_IMPORTED_MODULE_6__["default"].Title, {
     id: "example-custom-modal-styling-title"
-  }, "Create Depertments")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_bootstrap_Modal__WEBPACK_IMPORTED_MODULE_6__["default"].Body, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_bootstrap_esm_Container__WEBPACK_IMPORTED_MODULE_7__["default"], {
+  }, "Create Departments")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_bootstrap_Modal__WEBPACK_IMPORTED_MODULE_6__["default"].Body, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_bootstrap_esm_Container__WEBPACK_IMPORTED_MODULE_7__["default"], {
     fluid: "md"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
     className: _CreateDept_module_css__WEBPACK_IMPORTED_MODULE_1__["default"].fields
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("h6", null, "Please, Insert your required Depertments name and press Enter. Click the cross button to remove it."), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("h6", null, "Please, Insert your required Departments name and press Enter. Click the cross button to remove it."), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
     className: _CreateDept_module_css__WEBPACK_IMPORTED_MODULE_1__["default"].tagContainer
   }, tags.map((t, i) => {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
