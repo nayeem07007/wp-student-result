@@ -8,10 +8,6 @@ add_filter("plugin_action_links_$this->plugin", 'std_res_settings_link');
 // Enqueue Admin Scripts
 add_action('admin_enqueue_scripts', 'std_res_enqueue_admin_script');
 
-// Set table name
-// global $result_tbl;
-// $result_tbl = 'std_res_beta_students';
-
 // Custom API for result
 add_action( 'rest_api_init',  function(){
     register_rest_route( 'sr/v1', 'results', [
@@ -24,9 +20,29 @@ add_action( 'rest_api_init',  function(){
         'callback' => 'sr_show_search_result'
     ]);
 
+    register_rest_route( 'sr/v1', 'publish/results', [
+        'methods' => 'POST',
+        'callback' => 'sr_publish_result'
+    ]);
+
+    register_rest_route( 'sr/v1', 'publishing/results', [
+        'methods' => 'GET',
+        'callback' => 'sr_get_publishing_result'
+    ]);
+
+    register_rest_route( 'sr/v1', 'unpublish/results', [
+        'methods' => 'POST',
+        'callback' => 'sr_unpublish_result'
+    ]);
+
     register_rest_route( 'sr/v1', 'delete/result', [
         'methods' => 'POST',
         'callback' => 'sr_delete_result'
+    ]);
+
+    register_rest_route( 'sr/v1', 'delete/student', [
+        'methods' => 'POST',
+        'callback' => 'sr_delete_student'
     ]);
 
     register_rest_route( 'sr/v1', 'results', [
@@ -37,6 +53,11 @@ add_action( 'rest_api_init',  function(){
     register_rest_route( 'sr/v1', 'students', [
         'methods' => 'POST',
         'callback' => 'sr_save_students'
+    ]);
+
+    register_rest_route( 'sr/v1', 'students', [
+        'methods' => 'GET',
+        'callback' => 'sr_get_students'
     ]);
 
     register_rest_route( 'sr/v1', 'import/results', [
@@ -258,7 +279,7 @@ function sr_show_result()
     $result_tbl = $wpdb->prefix ."std_res_beta_result";
     
 
-    $results = $wpdb->get_results ("SELECT std_info FROM $result_tbl");
+    $results = $wpdb->get_results ("SELECT res_info FROM $result_tbl");
     
     $result = [];
     foreach ($results as $res){
@@ -273,7 +294,87 @@ function sr_show_result()
 
 /**
  * 
- * React Rest API for Showing Search Results.
+ * React Rest API for Show publishing Results.
+ *
+ * @since 1.0.0
+ *
+ */
+function sr_get_publishing_result()
+{
+    global $wpdb;
+
+    $result_tbl = $wpdb->prefix ."std_res_beta_result";
+    
+
+    $results = $wpdb->get_results ("SELECT res_info FROM $result_tbl");
+    
+    $filtered_result = [];
+    foreach ($results as $res){
+        // Search to see if the result is published or not.
+        $result_decoded = json_encode($res->res_info);        
+        $resultsStatus = $wpdb->get_row( $wpdb->prepare( "SELECT res_subject FROM $result_tbl WHERE res_info = $result_decoded" ) );
+        
+        
+        $result = json_decode($res->res_info);
+
+        $resData = ['dept'=>'', 'session' => '', 'class' => '', 'semester' => '', 'status' => $resultsStatus->res_subject];
+        foreach($result as $res){
+            if(key($res) == 'session'){
+                    $resData['session'] = $res->session;
+            }
+            if(key($res) == 'dept'){
+                $resData['dept'] = $res->dept;
+            }
+            if(key($res) == 'class'){
+                $resData['class'] = $res->class;
+            }
+
+            if(key($res) == 'semester'){
+                $resData['semester'] = $res->semester;
+            }
+        }
+        if(!empty($resData)){
+            $filtered_result[] = $resData;
+        }
+
+    };
+
+    // Removes duplicate objects.
+    $filtered_results = array_map('unserialize', array_unique(array_map('serialize', $filtered_result)));
+   
+    return($filtered_results); 
+}
+
+/**
+ * 
+ * React Rest API for Showing students.
+ *
+ * @since 1.0.0
+ *
+ */
+function sr_get_students()
+{
+    global $wpdb;
+
+    $student_tbl = $wpdb->prefix ."std_res_beta_students";
+    
+
+    $students = $wpdb->get_results ("SELECT std_info FROM $student_tbl");
+    
+    $students_data = [];
+    foreach ($students as $std){
+        $students_data[] = json_decode($std->std_info);
+    }
+
+    if( empty($students) ){
+        return $student_tbl;
+    }
+    return($students_data); 
+}
+
+/**
+ * 
+ * Delete Results.
  *
  * @since 1.0.0
  *
@@ -289,10 +390,28 @@ function sr_delete_result( $req )
     return $delete;
 }
 
+/**
+ * 
+ * Delete Students.
+ *
+ * @since 1.0.0
+ *
+ */
+function sr_delete_student( $req )
+{
+    global $wpdb;
+    $student_tbl = $wpdb->prefix . 'std_res_beta_students';
+    $field = 'std_info';
+    $request = $req->get_params();
+    $delete = $wpdb->delete( $student_tbl, array( $field => json_encode($request) ) );
+
+    return $delete;
+}
+
 
 /**
  * 
- * React Rest API for Showing Search Results.
+ * Show Search Results.
  *
  * @since 1.0.0
  *
@@ -358,6 +477,153 @@ function sr_show_search_result( $req )
     }
 
     return $filteredData;
+}
+
+/**
+ * 
+ * unpublish Results.
+ *
+ * @since 1.0.0
+ *
+ */
+function sr_unpublish_result( $req )
+{
+    global $wpdb;
+    $result_tbl = $wpdb->prefix . 'std_res_beta_result';
+    $field = 'res_info';
+    $request = $req->get_params();
+    $res_info = [];
+    $updated_rows = 0;
+  
+    $results = $wpdb->get_results($wpdb->prepare("SELECT {$field} FROM {$result_tbl}"), ARRAY_A);
+
+  
+
+    foreach($results as $res){
+        $res_info [] = json_decode($res['res_info']);
+        $classes = [];
+        foreach($res_info as $r ){
+            $session = '';
+            $semester = '';
+            $class = '';
+            $dept = '';
+       
+            foreach($r as $dt){
+                if(!empty($dt->class)){
+                    $class = $dt->class;
+                };
+                if(!empty($dt->session)){
+                    $session = $dt->session;
+                };
+                if(!empty($dt->semester)){
+                    $semester = $dt->semester;
+                };
+                if(!empty($dt->dept)){
+                    $dept = strtolower($dt->dept);
+                };
+            }
+
+            $classes[] = $class;
+            $option = "";
+            $reque = "";
+
+            if(!empty($class)){
+                $option = $class;
+                $reque = 'class';
+            }elseif(!empty($semester)){
+                $option = $semester;
+                $reque = 'semester';
+            }
+
+            if(strtolower($dept) == strtolower($request['dept']) && $session == $request['session']){
+                
+                if( $option === $request[$reque]){
+
+                   $updateStatus = $wpdb->update( $result_tbl, array('res_subject' => "not published"), array('res_info' => json_encode($r)));
+                    
+                    if($updateStatus){
+                        $updated_rows++;
+                    }
+                }
+                
+            }
+        }
+        
+    }
+    return($updated_rows);
+}
+
+/**
+ * 
+ * Publish Results.
+ *
+ * @since 1.0.0
+ *
+ */
+function sr_publish_result( $req )
+{
+    global $wpdb;
+    $result_tbl = $wpdb->prefix . 'std_res_beta_result';
+    $field = 'res_info';
+    $request = $req->get_params();
+    $res_info = [];
+    $updated_rows = 0;
+
+    $results = $wpdb->get_results($wpdb->prepare("SELECT {$field} FROM {$result_tbl}"), ARRAY_A);
+
+  
+
+    foreach($results as $res){
+        $res_info [] = json_decode($res['res_info']);
+        $classes = [];
+        foreach($res_info as $r ){
+            $session = '';
+            $semester = '';
+            $class = '';
+            $dept = '';
+       
+            foreach($r as $dt){
+                if(!empty($dt->class)){
+                    $class = $dt->class;
+                };
+                if(!empty($dt->session)){
+                    $session = $dt->session;
+                };
+                if(!empty($dt->semester)){
+                    $semester = $dt->semester;
+                };
+                if(!empty($dt->dept)){
+                    $dept = strtolower($dt->dept);
+                };
+            }
+
+            $classes[] = $class;
+            $option = "";
+            $reque = "";
+
+            if(!empty($class)){
+                $option = $class;
+                $reque = 'class';
+            }elseif(!empty($semester)){
+                $option = $semester;
+                $reque = 'semester';
+            }
+
+            if(strtolower($dept) == strtolower($request['dept']) && $session == $request['session']){
+                
+                if( $option === $request[$reque]){
+
+                   $updateStatus =  $wpdb->update( $result_tbl, array('res_subject' => "published"), array('res_info' => json_encode($r)));
+  
+                    if($updateStatus){
+                        $updated_rows++;
+                    }
+                }
+            }
+        }
+        
+    }
+    return($updated_rows);
 }
 
 /**
@@ -475,6 +741,7 @@ function sr_save_result($req)
             // Insert Record
             $wpdb->insert($wpdb->prefix . 'std_res_beta_result', array(
                 'res_info' => json_encode($result), 
+                'res_subject' => 'not published'
             ));
 
             if($wpdb->insert_id > 0){
@@ -615,6 +882,7 @@ function sr_save_imported_result($req)
                         // Insert Record
                         $wpdb->insert($result_tbl, array(
                             'res_info' => $info,
+                            'res_subject' => 'not published'
                         ));
 
                         if($wpdb->insert_id > 0){
@@ -687,7 +955,7 @@ function sr_save_imported_students($req)
                     if(!empty($name) && !empty($info)) { 
                         // Insert Record
                         $wpdb->insert($students_table, array(
-                            'std_info' => $info, 
+                            'std_info'    => $info, 
                         ));
 
                         if($wpdb->insert_id > 0){
@@ -1261,11 +1529,13 @@ function save_config($req)
  */
 function std_res_enqueue_admin_script()
 {
-    
-    $base_url = get_site_url( __FILE__ );
-
-    wp_enqueue_script('std_res_admin_react_scripts', plugin_dir_url(dirname(__FILE__)) . 'admin/build/index.js');
-    wp_localize_script('std_res_admin_react_scripts' , 'api_base_url', [ $base_url ] );
+     $currentScreen = get_current_screen();
+     if($currentScreen->id == 'toplevel_page_std_res_settigns'){ 
+        $base_url = get_site_url( __FILE__ );
+         
+        wp_enqueue_script('std_res_admin_react_scripts', plugin_dir_url(dirname(__FILE__)) . 'admin/build/index.js');
+        wp_localize_script('std_res_admin_react_scripts' , 'api_base_url', [ $base_url ] );
+    }
 
 }
 

@@ -15,7 +15,7 @@
   align-content: center;
   margin: 0.5% 0%;
 }
-h6 {
+.fields h6 {
   color: red;
 }
 .tagContainer {
@@ -54,4 +54,3 @@ h6 {
 .bttn {
   margin: 10px;
 }
-

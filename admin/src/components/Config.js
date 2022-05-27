@@ -11,7 +11,6 @@ import classes from "./Config.module.css";
 import AssignCourses from "./UI/AssignCourses";
 import AssignSemester from "./UI/AssignSemester";
 import axios from "axios";
-import { Capslock } from "react-bootstrap-icons";
 
 const Config = () => {
   const [isLoading, setIsLoading] = useState(true);

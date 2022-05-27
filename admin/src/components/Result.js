@@ -1,4 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
+import PublishResults from "./UI/PublishResults";
 import FieldSelector from "./UI/FieldSelector";
 import FileInput from "./UI/FileInput";
 import Search from "./UI/SearchResult";
@@ -30,6 +31,7 @@ const Result = () => {
         <Loading />
       ) : (
         <div>
+          <PublishResults />
           <ChooseCredentials onFill={filledhandler} />
           <FileInput
             url={api_base_url + "/wp-json/sr/v1/import/results"}

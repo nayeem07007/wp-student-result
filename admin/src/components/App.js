@@ -1,12 +1,9 @@
 import React, { Fragment, useState, useEffect } from "react";
-// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from "./UI/Navbar";
-import Dashboard from "./Dashboard";
 import Result from "./Result";
 import Student from "./Student";
 import Config from "./Config";
-import GoPro from "./GoPro";
 
 function App() {
   const [result, setResult] = useState();

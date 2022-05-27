@@ -27,23 +27,6 @@ const AssignSubjects = () => {
       .catch((error) => console.log(error));
   }, []);
 
-  // const options = [
-  //   { value: "english", label: "English" },
-  //   { value: "bangla", label: "Bangla" },
-  //   { value: "math", label: "Math" },
-  // ];
-
-  // const sessionsOptions = [
-  //   { value: "2021-2022", label: "2021-2022" },
-  //   { value: "2020-2021", label: "2020-2021" },
-  //   { value: "2019-2020", label: "2019-2020" },
-  // ];
-  // const classOptions = [
-  //   { value: "09", label: "09" },
-  //   { value: "08", label: "08" },
-  //   { value: "07", label: "07" },
-  // ];
-
   const addTag = (e) => {
     if (e.key === "Enter") {
       if (e.target.value.length > 0) {
@@ -101,22 +84,6 @@ const AssignSubjects = () => {
           </Modal.Header>
           <Modal.Body>
             <Container fluid="md" className="">
-              {/* <h4>Assign Subjects</h4> */}
-              {/* <div>
-                <h5>Select depertment :</h5>
-                <Select options={options} />
-              </div>
-
-              <div>
-                <h5>Select Session :</h5>
-                <Select options={sessionsOptions} />
-              </div> */}
-
-              {/* <div>
-                <h5>Select Class :</h5>
-                <Select options={classOptions} />
-              </div> */}
-
               <h5>Add Subjects</h5>
               <div className={classes.fields}>
                 <h6>

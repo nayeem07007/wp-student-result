@@ -102,8 +102,6 @@ jQuery(document).ready(function ($) {
       roll: $("#sr_roll").val(),
     };
 
-    // console.log(searchBy);
-
     $.ajax({
       url: api,
       type: "post",

@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect } from "react";
 import Container from "react-bootstrap/esm/Container";
 import RegForm from "./UI/RegForm";
 import FileInput from "./UI/FileInput";
+import ShowStudents from "./UI/ShowStudents";
 import ChooseCredentials from "./UI/ChooseCredentials";
 import Loading from "./UI/Loading";
 
@@ -33,6 +34,7 @@ const Student = (props) => {
             credentials={filledCredentials}
           />
           <RegForm filled={isFilled} />
+          <ShowStudents />
         </div>
       )}
     </Fragment>
