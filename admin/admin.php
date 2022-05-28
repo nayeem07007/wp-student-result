@@ -424,7 +424,7 @@ function sr_show_search_result( $req )
     $request = $req->get_params();
     $res_info = [];
 
-    $results = $wpdb->get_results($wpdb->prepare("SELECT {$field} FROM {$result_tbl}"), ARRAY_A);
+    $results = $wpdb->get_results($wpdb->prepare("SELECT {$field} FROM {$result_tbl} WHERE res_subject = 'published'"), ARRAY_A);
 
     $filteredData = [];
 

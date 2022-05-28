@@ -109,11 +109,12 @@ jQuery(document).ready(function ($) {
       contentType: "application/json",
       data: JSON.stringify(searchBy),
       success: function (data) {
-        // console.log(data);
+        console.log(data[0]);
         if (data.length > 0) {
           $("#headerTitle").empty();
           $("<h4>Student Reesult</h4>").appendTo("#headerTitle");
         }
+
         $(".resultView").show();
         generateTable(data[0]);
       },
@@ -123,6 +124,13 @@ jQuery(document).ready(function ($) {
     function generateTable(results) {
       $("#rtBody").empty();
       $(".resultView").show();
+      if (!results) {
+        $("#headerTitle").empty();
+        $("<h4 class='text-danger'>No result found</h4>").appendTo(
+          "#headerTitle"
+        );
+        return;
+      }
 
       var keys = Object.keys(results);
 
