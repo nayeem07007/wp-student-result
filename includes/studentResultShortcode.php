@@ -18,6 +18,33 @@ add_action('wp_enqueue_scripts', 'std_res_enqueue_show_result_script');
  */
 function results_shortcode()
 {
+    // Check if semester data is available
+    global $wpdb;
+    $semester_tbl = $wpdb->prefix . 'std_res_beta_semester';
+    $semester_field = 'semester_name';
+
+    $semesters = $wpdb->get_results( $wpdb->prepare( "SELECT {$semester_field} FROM {$semester_tbl}" ));
+
+    $semester_data = [];
+
+    foreach($semesters as $semester){
+        $semester_data[] = $semester->semester_name;
+    }
+
+    // Check if class data is available
+    $class_tbl = $wpdb->prefix . 'std_res_beta_class';
+    $class_field = 'class_name';
+
+    $classes = $wpdb->get_results( $wpdb->prepare( "SELECT {$class_field} FROM {$class_tbl}" ));
+
+    $class_data = [];
+
+    foreach($classes as $class){
+        $class_data[] = $class->class_name;
+    }
+
+
+
     $html = __("<div class='container' style='margin: 5px;'>", 'Student-Result');
     $html .= __("<div class='resultSearch' style='border: 1px solid gray; border-radius: 10px; padding: 15px; text-align: center;'>", 'Student-Result');
     $html .= __("<h4>Student Result</h4>", 'Student-Result');
@@ -25,7 +52,7 @@ function results_shortcode()
 
     $html .= 
     __("<form id='SearchResForm' >
-        <div class='form-group row'>
+        <div class='form-group row' id='exam_field'>
             <label for='exam' class='col-sm-3 col-form-label text-left'>Examination </label>
             <div class='col-sm-9'>
             <select type='text' name='exam' class='form-control' id='sr_exam' placeholder='examination'>
@@ -33,31 +60,35 @@ function results_shortcode()
             </select>
             </div>
         </div>
-        <div class='form-group row'>
+        <div class='form-group row' id='session_field'>
             <label for='session' class='col-sm-3 col-form-label text-left'>Session </label>
             <div class='col-sm-9'>
             <select type='text' name='session' class='form-control' id='sr_session' placeholder='session'>
             <option></option>
             </select>
             </div>
-        </div>
-        <div class='form-group row'>
+        </div>" , 'Student-Result');
+        if(!empty($semester_data)){
+        $html .= __("<div class='form-group row' id='semester_field'>
             <label for='semester' class='col-sm-3 col-form-label text-left'>Semester </label>
             <div class='col-sm-9'>
             <select type='text' class='form-control' name='semester' id='sr_semester' placeholder='semester'>
             <option></option>
             </select>
             </div>
-        </div>
-        <div class='form-group row'>
-            <label for='class' class='col-sm-3 col-form-label text-left'>Class </label>
-            <div class='col-sm-9'>
-            <select type='text' class='form-control' name='class' id='sr_class' placeholder='class'>
-            <option></option>
-            </select>
-            </div>
-        </div>
-        <div class='form-group row'>
+        </div>" , 'Student-Result');
+        }
+        if(!empty($class_data)){
+            $html .= __("<div class='form-group row' id='class_field'>
+                <label for='class' class='col-sm-3 col-form-label text-left'>Class </label>
+                <div class='col-sm-9'>
+                <select type='text' class='form-control' name='class' id='sr_class' placeholder='class'>
+                <option></option>
+                </select>
+                </div>
+            </div>" , 'Student-Result');
+        }
+         $html .= __("<div class='form-group row' id='roll_field'>
             <label for='roll' class='col-sm-3 col-form-label text-left'>Roll </label>
             <div class='col-sm-9'>
             <input type='text' class='form-control' name='roll' id='sr_roll' placeholder='roll'>

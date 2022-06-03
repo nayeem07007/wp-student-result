@@ -39,6 +39,10 @@ jQuery(document).ready(function ($) {
     type: "GET",
     dataType: "json",
     success: function (res) {
+      if (res.length == 0) {
+        $("#semester_field").hide();
+        return;
+      }
       addSemesterOpts(res);
     },
   });
@@ -48,6 +52,10 @@ jQuery(document).ready(function ($) {
     type: "GET",
     dataType: "json",
     success: function (res) {
+      if (res.length == 0) {
+        $("#class_field").hide();
+        return;
+      }
       addClassOpt(res);
     },
   });
@@ -70,7 +78,7 @@ jQuery(document).ready(function ($) {
 
   // Add semster options
   function addSemesterOpts(semesters) {
-    // console.log(semesters);
+    console.log(semesters);
     $.each(semesters, function (index, semester) {
       $("#sr_semester").append("<option>" + semester + "</option>");
     });

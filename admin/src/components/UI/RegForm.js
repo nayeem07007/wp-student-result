@@ -109,7 +109,7 @@ const RegForm = (props) => {
                 className="form-control"
                 placeholder={"Enter " + field}
                 minLength={1}
-                debounceTimeout={1000}
+                debounceTimeout={1500}
                 onChange={saveFormdata}
               />
             </Form.Group>
