@@ -1,5 +1,7 @@
 jQuery(document).ready(function ($) {
   ("use strict");
+  // Hide fail msg
+  $("#fail_msg").hide();
 
   // Hide table view
   $(".resultView").hide();
@@ -12,8 +14,10 @@ jQuery(document).ready(function ($) {
   var classUrl = api_base_url + "/wp-json/sr/v1/class";
   var results = null;
 
-  // Disable submit button if input input is empty
+  // Disable submit button if input is empty
   $("#searchRes").attr("disabled", true);
+  // Disable validation if input roll is empty
+  $("#sr_validate").attr("disabled", "disabled");
 
   // get options to display
   $.ajax({
@@ -94,13 +98,41 @@ jQuery(document).ready(function ($) {
 
   // Enable submit button if roll is not empty.
   $("#sr_roll").keyup(function () {
-    if ($(this).val().length != 0) $("#searchRes").attr("disabled", false);
-    else $("#searchRes").attr("disabled", true);
+    if ($(this).val().length != 0) $("#sr_validate").removeAttr("disabled");
+    else $("#sr_validate").attr("disabled", "disabled");
+  });
+
+  // Validation
+  var randomNum1;
+  var randomNum2;
+  var maxNum = 20;
+  var total;
+
+  randomNum1 = Math.ceil(Math.random() * maxNum);
+  randomNum2 = Math.ceil(Math.random() * maxNum);
+  total = randomNum1 + randomNum2;
+
+  $("#validation_label").prepend(randomNum1 + " + " + randomNum2);
+
+  $("#sr_validate").keyup(function () {
+    var input = $(this).val();
+    $("#fail_msg").hide();
+
+    if (input == total) {
+      console.log("success!!!");
+      $("#fail_msg").hide();
+      $("#searchRes").attr("disabled", false);
+    } else {
+      console.log("failed!!!");
+      $("#fail_msg").show();
+      $("#searchRes").attr("disabled", "disabled");
+    }
   });
 
   // Search Result
   $("#searchRes").click(function (event) {
     event.preventDefault();
+    $("#fail_msg").hide();
 
     var searchBy = {
       exam: $("#sr_exam").val(),
@@ -149,10 +181,10 @@ jQuery(document).ready(function ($) {
             console.log(results[key].cgpa.toFixed(2));
             $("#rtBody").append(
               "<tr><th class='col-md-9' scope='row'>" +
-              Object.keys(results[key]) +
-              "</th><td>" +
-              results[key].cgpa.toFixed(2) +
-              "</td></tr>"
+                Object.keys(results[key]) +
+                "</th><td>" +
+                results[key].cgpa.toFixed(2) +
+                "</td></tr>"
             );
             return;
           }
@@ -171,7 +203,9 @@ jQuery(document).ready(function ($) {
   // Reset form.
   $("#resFormReset").click(function (event) {
     event.preventDefault();
+    $("#fail_msg").hide();
     $("#SearchResForm").trigger("reset");
+    $("#sr_validate").attr("disabled", "disabled");
     $(".resultView").hide();
     $("#searchRes").attr("disabled", true);
     $("#rtBody").find("th").text("");

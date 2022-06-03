@@ -55,7 +55,7 @@ function results_shortcode()
         <div class='form-group row' id='exam_field'>
             <label for='exam' class='col-sm-3 col-form-label text-left'>Examination </label>
             <div class='col-sm-9'>
-            <select type='text' name='exam' class='form-control' id='sr_exam' placeholder='examination'>
+            <select type='text' name='exam' class='form-control' id='sr_exam' placeholder='Examination'>
             <option></option>
             </select>
             </div>
@@ -63,7 +63,7 @@ function results_shortcode()
         <div class='form-group row' id='session_field'>
             <label for='session' class='col-sm-3 col-form-label text-left'>Session </label>
             <div class='col-sm-9'>
-            <select type='text' name='session' class='form-control' id='sr_session' placeholder='session'>
+            <select type='text' name='session' class='form-control' id='sr_session' placeholder='Session'>
             <option></option>
             </select>
             </div>
@@ -72,7 +72,7 @@ function results_shortcode()
         $html .= __("<div class='form-group row' id='semester_field'>
             <label for='semester' class='col-sm-3 col-form-label text-left'>Semester </label>
             <div class='col-sm-9'>
-            <select type='text' class='form-control' name='semester' id='sr_semester' placeholder='semester'>
+            <select type='text' class='form-control' name='semester' id='sr_semester' placeholder='Semester'>
             <option></option>
             </select>
             </div>
@@ -82,7 +82,7 @@ function results_shortcode()
             $html .= __("<div class='form-group row' id='class_field'>
                 <label for='class' class='col-sm-3 col-form-label text-left'>Class </label>
                 <div class='col-sm-9'>
-                <select type='text' class='form-control' name='class' id='sr_class' placeholder='class'>
+                <select type='text' class='form-control' name='class' id='sr_class' placeholder='Class'>
                 <option></option>
                 </select>
                 </div>
@@ -91,7 +91,14 @@ function results_shortcode()
          $html .= __("<div class='form-group row' id='roll_field'>
             <label for='roll' class='col-sm-3 col-form-label text-left'>Roll </label>
             <div class='col-sm-9'>
-            <input type='text' class='form-control' name='roll' id='sr_roll' placeholder='roll'>
+            <input type='text' class='form-control' name='roll' id='sr_roll' placeholder='Roll'>
+            </div>
+        </div>
+        <div class='form-group row' id='validions_field'>
+            <label for='validation' id='validation_label' class='col-sm-3 col-form-label text-left'> </label>
+            <div class='col-sm-9'>
+            <input type='number' class='form-control' name='validation' id='sr_validate' placeholder='Enter sum the numbers.'>
+            <p id='fail_msg' class='float-left text-danger'>Inocrrect!!!</p>
             </div>
         </div>
         <div class='form-group row'>
