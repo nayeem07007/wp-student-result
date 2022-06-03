@@ -735,7 +735,7 @@ function sr_save_result($req)
                 $sub_grade_total = array_sum($grade_point);
                 $items = count($grade_point);
                 $cgpa = $sub_grade_total / $items;
-                $result[] = [ 'cgpa' => $cgpa ];
+                $result[] = [ 'cgpa' => round($cgpa, 2) ];
             }
 
             // Insert Record
@@ -838,7 +838,6 @@ function sr_save_imported_result($req)
                     foreach($keys as $key){                        
                         if(strtolower(implode(" ",array_keys(($res_info[$key])))) == strtolower($sub)){
                             $sub_marks[] = ($res_info[$key]);
-                            // return (implode(" ",array_values(($res_info[$key]))));
                             foreach($grades as $grade){
                                 if(implode(" ",array_values(($res_info[$key]))) >= $grade->grade_min_mark && implode(" ",array_values(($res_info[$key]))) <= $grade->grade_max_mark ){
                                   
@@ -869,7 +868,7 @@ function sr_save_imported_result($req)
                     $sub_grade_total = array_sum($grade_point);
                     $items = count($grade_point);
                     $cgpa = $sub_grade_total / $items;
-                    $res_info[] = [ 'cgpa' => $cgpa ];
+                    $res_info[] = [ 'cgpa' => round($cgpa, 2) ];
                 }
 
                 $info = json_encode($res_info);
