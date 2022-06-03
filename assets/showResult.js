@@ -130,6 +130,7 @@ jQuery(document).ready(function ($) {
 
     // generate result table
     function generateTable(results) {
+      console.log(results);
       $("#rtBody").empty();
       $(".resultView").show();
       if (!results) {
@@ -144,6 +145,17 @@ jQuery(document).ready(function ($) {
 
       $.each(keys, function (index, key) {
         if (Object.keys(results[key]) != "sl") {
+          if (Object.keys(results[key]) == "cgpa") {
+            console.log(results[key].cgpa.toFixed(2));
+            $("#rtBody").append(
+              "<tr><th class='col-md-9' scope='row'>" +
+              Object.keys(results[key]) +
+              "</th><td>" +
+              results[key].cgpa.toFixed(2) +
+              "</td></tr>"
+            );
+            return;
+          }
           $("#rtBody").append(
             "<tr><th class='col-md-9' scope='row'>" +
               Object.keys(results[key]) +
