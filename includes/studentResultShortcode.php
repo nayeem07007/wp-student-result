@@ -45,7 +45,7 @@ function results_shortcode()
 
 
 
-    $html = __("<div class='container' style='margin: 5px;'>", 'Student-Result');
+    $html = __("<div id='view_res_container' class='container' style='margin: 5px;'>", 'Student-Result');
     $html .= __("<div class='resultSearch' style='border: 1px solid gray; border-radius: 10px; padding: 15px; text-align: center;'>", 'Student-Result');
     $html .= __("<h4>Student Result</h4>", 'Student-Result');
     $html .= __("<div class='search_form' style=' padding: 5%; '>", 'Student-Result');
@@ -113,6 +113,7 @@ function results_shortcode()
    $html .= "</div>";
    $html .= "</div>";
    $html .= __("<div class='resultView' style='margin:5%; padding:10px; border: 2px solid grey; border-radius:15px;' >", 'Student-Result');
+   $html .= __("<Button id='prin_me_link'class='float-right btn-warning'>print</Button>", 'Student-Result');
    
    $html .= __("<div id='headerTitle'>", 'Student-Result');
    $html .= "</div>";

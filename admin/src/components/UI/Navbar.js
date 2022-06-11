@@ -5,15 +5,15 @@ import NavItem from "react-bootstrap/NavItem";
 import Container from "react-bootstrap/Container";
 
 const NavbarSection = (props) => {
-  const [isDashboard, setIsDashboard] = useState("no");
-  const [isResult, setIsResult] = useState("yes");
+  const [isStudentRes, setIsStudentRes] = useState("yes");
+  const [isResult, setIsResult] = useState("no");
   const [isStudent, setIsStudent] = useState("no");
   const [isGoPro, setIsGoPro] = useState("no");
   const [isConfig, setIsConfig] = useState("no");
 
   const showResult = () => {
     setIsResult("yes");
-    setIsDashboard("no");
+    setIsStudentRes("no");
     setIsStudent("no");
     setIsGoPro("no");
     setIsConfig("no");
@@ -21,7 +21,7 @@ const NavbarSection = (props) => {
 
   const showStudent = () => {
     setIsResult("no");
-    setIsDashboard("no");
+    setIsStudentRes("no");
     setIsStudent("yes");
     setIsGoPro("no");
     setIsConfig("no");
@@ -29,15 +29,15 @@ const NavbarSection = (props) => {
 
   const showGoPro = () => {
     setIsResult("no");
-    setIsDashboard("no");
+    setIsStudentRes("no");
     setIsStudent("no");
     setIsGoPro("yes");
     setIsConfig("no");
   };
 
-  const showDashboard = () => {
+  const showStudentRes = () => {
     setIsResult("no");
-    setIsDashboard("yes");
+    setIsStudentRes("yes");
     setIsStudent("no");
     setIsGoPro("no");
     setIsConfig("no");
@@ -45,19 +45,19 @@ const NavbarSection = (props) => {
 
   const showConfig = () => {
     setIsResult("no");
-    setIsDashboard("no");
+    setIsStudentRes("no");
     setIsStudent("no");
     setIsGoPro("no");
     setIsConfig("yes");
   };
-  props.onSelect(isResult, isDashboard, isStudent, isGoPro, isConfig);
+  props.onSelect(isResult, isStudentRes, isStudent, isGoPro, isConfig);
 
   return (
     <Fragment>
       {
         <Navbar className="" bg="light" expand="lg">
           <Container fluid>
-            <Navbar.Brand>Student Result</Navbar.Brand>
+            <Navbar.Brand onClick={showStudentRes}>Student Result</Navbar.Brand>
             <Navbar.Toggle aria-controls="navbarSR" />
             <Navbar.Collapse id="navbarSR">
               <Nav

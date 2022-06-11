@@ -11,11 +11,15 @@ import classes from "./Config.module.css";
 import AssignCourses from "./UI/AssignCourses";
 import AssignSemester from "./UI/AssignSemester";
 import axios from "axios";
+import Assign4thSubject from "./UI/Assign4thSubject";
 
 const Config = () => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // turn it back to true
   const [isClass, setIsClass] = useState(Boolean);
   const [isSemester, setIsSemester] = useState(Boolean);
+  const [isGpa, setIsGpa] = useState(Boolean);
+  const [isCgpa, setIsCgpa] = useState(Boolean);
+
   const [configBy, setConfigBy] = useState();
 
   useEffect(() => {
@@ -26,7 +30,7 @@ const Config = () => {
     axios
       .get(api_base_url + "/wp-json/sr/v1/config")
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
 
         if (response.data[0] == "semester") {
           setIsSemester(true);
@@ -34,6 +38,21 @@ const Config = () => {
         } else {
           setIsSemester(false);
           setIsClass(true);
+        }
+      })
+      .catch((error) => console.log(error));
+
+    axios
+      .get(api_base_url + "/wp-json/sr/v1/config_grade")
+      .then((response) => {
+        // console.log(response.data);
+
+        if (response.data[0] == "CGPA") {
+          setIsCgpa(true);
+          setIsGpa(false);
+        } else {
+          setIsGpa(true);
+          setIsCgpa(false);
         }
       })
       .catch((error) => console.log(error));
@@ -54,7 +73,7 @@ const Config = () => {
       .post(api_base_url + "/wp-json/sr/v1/config", selected, {
         headers: headers,
       })
-      .then((response) => console.log(response.data))
+      .then((response) => null)
       .catch((error) => console.log(error));
   };
 
@@ -71,12 +90,46 @@ const Config = () => {
       .post(api_base_url + "/wp-json/sr/v1/config", selected, {
         headers: headers,
       })
-      .then((response) => console.log(response))
+      .then((response) => null)
       .catch((error) => console.log(error));
   };
 
-  console.log("class : " + isClass);
-  console.log("semester : " + isSemester);
+  const selectGpa = (e) => {
+    setIsGpa(true);
+    setIsCgpa(false);
+    const selected = "GPA";
+    const headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    };
+
+    axios
+      .post(api_base_url + "/wp-json/sr/v1/config_grade", selected, {
+        headers: headers,
+      })
+      .then((response) => null)
+      .catch((error) => console.log(error));
+  };
+
+  const selectCgpa = (e) => {
+    setIsGpa(false);
+    setIsCgpa(true);
+    const selected = "CGPA";
+    const headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    };
+
+    axios
+      .post(api_base_url + "/wp-json/sr/v1/config_grade", selected, {
+        headers: headers,
+      })
+      .then((response) => null)
+      .catch((error) => console.log(error));
+  };
+
+  // console.log("class : " + isClass);
+  // console.log("semester : " + isSemester);
   return (
     <Fragment>
       {isLoading === true ? (
@@ -87,6 +140,7 @@ const Config = () => {
             <h4>How would you like to maintain students?</h4>
             <div>
               <div className={classes.radio}>
+                <label>{"1 . "}</label>
                 <input
                   type="radio"
                   onClick={selectClass}
@@ -104,6 +158,25 @@ const Config = () => {
                 />{" "}
                 By Semester
               </div>
+              <div className={classes.radio}>
+                <label>{"2 . "}</label>
+                <input
+                  type="radio"
+                  onClick={selectGpa}
+                  checked={isGpa}
+                  value="GPA"
+                  name="gpa"
+                />{" "}
+                GPA
+                <input
+                  type="radio"
+                  onClick={selectCgpa}
+                  checked={isCgpa}
+                  value="CGPA"
+                  name="cgpa"
+                />{" "}
+                CGPA
+              </div>
             </div>
           </div>
           <CreateDept />
@@ -114,6 +187,7 @@ const Config = () => {
           {isClass && <AssignSubjects />}
           <AssignExams />
           <AssignGrade />
+          <Assign4thSubject />
         </Container>
       )}
     </Fragment>

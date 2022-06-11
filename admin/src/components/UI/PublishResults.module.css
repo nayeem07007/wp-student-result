@@ -1,3 +1,19 @@
+.resContainer {
+  margin: 2%;
+  padding: 2%;
+  width: 96%;
+  background-color: rgb(211, 226, 243);
+}
+.Form {
+  font-size: medium;
+}
 .Form select {
   margin: 2%;
+}
+.form_container {
+  margin: 0% 0% 5% 5%;
+}
+.table_heading {
+  color: black;
+  font: bold;
 }

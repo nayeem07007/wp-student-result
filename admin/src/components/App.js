@@ -4,16 +4,17 @@ import Navbar from "./UI/Navbar";
 import Result from "./Result";
 import Student from "./Student";
 import Config from "./Config";
+import StudentResult from "./StudentResult";
 
 function App() {
   const [result, setResult] = useState();
   const [student, setStudent] = useState();
   const [config, setConfig] = useState();
-  // const [dash, setDash] = useState();
+  const [studentResult, setStudentResult] = useState();
   // const [goPro, setGoPro] = useState();
 
-  const addShowOption = (result, dashboard, student, goPro, config) => {
-    // setDash(dashboard);
+  const addShowOption = (result, studentRes, student, goPro, config) => {
+    setStudentResult(studentRes);
     setResult(result);
     setStudent(student);
     setConfig(config);
@@ -23,7 +24,7 @@ function App() {
   return (
     <Fragment>
       <Navbar onSelect={addShowOption} />
-      {/* {dash == "yes" && <Dashboard />} */}
+      {studentResult == "yes" && <StudentResult />}
       {result == "yes" && <Result />}
       {student == "yes" && <Student />}
       {config == "yes" && <Config />}

@@ -16,44 +16,12 @@ const AssignSemester = () => {
   const [fields, setFields] = useState([]);
   const [tags, setTags] = useState([]);
   const [show, setShow] = useState(false);
-  // const [deptOpts, setDeptOpts] = useState([]);
-  // const [sessionOpts, setSessionOpts] = useState([]);
-
+  
   useEffect(() => {
-    // Might not be needed!!!
-    // axios
-    //   .get(api_base_url + "/wp-json/sr/v1/dept")
-    //   .then((response) => {
-    //     console.log(response.data);
-    //     // setDepts(response.data);
-
-    //     const opts = response.data.map((dept) => ({
-    //       value: dept,
-    //       label: Cap(dept),
-    //     }));
-
-    //     setDeptOpts([...deptOpts, ...opts]);
-    //   })
-    //   .catch((error) => console.log(error));
-
-    // axios
-    //   .get(api_base_url + "/wp-json/sr/v1/session")
-    //   .then((response) => {
-    //     console.log(response.data);
-    //     // setSessionOpts(response.data);
-    //     const sOpts = response.data.map((session) => ({
-    //       value: session,
-    //       label: Cap(session),
-    //     }));
-
-    //     setSessionOpts([...sessionOpts, ...sOpts]);
-    //   })
-    //   .catch((error) => console.log(error));
-
     axios
       .get(api_base_url + "/wp-json/sr/v1/semester")
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         setTags(response.data);
       })
       .catch((error) => console.log(error));
@@ -85,14 +53,10 @@ const AssignSemester = () => {
         headers: headers,
       })
       .then((response) => {
-        console.log(response);
+        // console.log(response);
       })
       .catch((error) => console.log(error));
   };
-
-  // console.log(tags);
-  // console.log(deptOpts);
-  // console.log(sessionOpts);
 
   return (
     <Fragment>

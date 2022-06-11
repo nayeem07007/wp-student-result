@@ -53,12 +53,12 @@ const AssignCourses = () => {
         headers: headers,
       })
       .then((response) => {
-        console.log(response);
+        // console.log(response);
       })
       .catch((error) => console.log(error));
   };
 
-  console.log(tags);
+  // console.log(tags);
 
   return (
     <Fragment>
@@ -84,17 +84,6 @@ const AssignCourses = () => {
           </Modal.Header>
           <Modal.Body>
             <Container fluid="md" className="">
-              {/* <h4>Assign Classes</h4> */}
-              {/* <div>
-                <h5>Select depertment :</h5>
-                <Select options={options} />
-              </div>
-
-              <div>
-                <h5>Select Session :</h5>
-                <Select options={sessionsOptions} />
-              </div> */}
-
               <h5>Add Courses</h5>
               <div className={classes.fields}>
                 <h6>

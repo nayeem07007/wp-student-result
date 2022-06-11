@@ -21,22 +21,11 @@ const AssignExams = () => {
     axios
       .get(api_base_url + "/wp-json/sr/v1/exam")
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         setTags(response.data);
       })
       .catch((error) => console.log(error));
   }, []);
-  // const options = [
-  //   { value: "english", label: "English" },
-  //   { value: "bangla", label: "Bangla" },
-  //   { value: "math", label: "Math" },
-  // ];
-
-  // const sessionsOptions = [
-  //   { value: "2021-2022", label: "2021-2022" },
-  //   { value: "2020-2021", label: "2020-2021" },
-  //   { value: "2019-2020", label: "2019-2020" },
-  // ];
 
   const addTag = (e) => {
     if (e.key === "Enter") {
@@ -64,12 +53,10 @@ const AssignExams = () => {
         headers: headers,
       })
       .then((response) => {
-        console.log(response);
+        // console.log(response);
       })
       .catch((error) => console.log(error));
   };
-
-  console.log(tags);
 
   return (
     <Fragment>

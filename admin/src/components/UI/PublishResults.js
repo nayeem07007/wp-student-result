@@ -1,16 +1,13 @@
 import React, { Fragment, useEffect, useState } from "react";
-import Container from "react-bootstrap/esm/Container";
 import classes from "./PublishResults.module.css";
-import ModalClasses from "./Modal.module.css";
 import "bootstrap/dist/css/bootstrap.css";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
-import Select from "react-select";
-import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Table from "react-bootstrap/Table";
+import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
+import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
+import BootstrapTable from "react-bootstrap-table-next";
+import paginationFactory from "react-bootstrap-table2-paginator";
 
 const PublishResults = () => {
   const Cap = (str) => {
@@ -18,10 +15,12 @@ const PublishResults = () => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
-  const [show, setShow] = useState(false);
+  // const [show, setShow] = useState(false);
+  const [configedBySemester, setConfigedBySemester] = useState(false);
+  const [configedByClass, setConfigedByClass] = useState(true);
   const [availableResults, setAvailableResults] = useState([]);
   const [publishingData, setPublishingData] = useState({});
-  const [selectBy, setSelectBy] = useState();
+  const [selectBy, setSelectBy] = useState("");
   const [publishingStatus, setPublishingStatus] = useState(false);
   const [unpublishingStatus, setUnpublishingStatus] = useState(false);
   const [publishedItems, setPublishedItems] = useState("0");
@@ -30,11 +29,18 @@ const PublishResults = () => {
   const [sessionOption, setSessionOption] = useState([]);
   const [classOption, setClassOption] = useState([]);
   const [semesterOption, setSemesterOption] = useState([]);
-
+  const [studentsData, setStudentsData] = useState([]);
+  const [columns, setColumns] = useState([
+    { dataField: "dept", text: "Department", sort: true },
+    { dataField: "session", text: "Session", sort: true },
+    { dataField: "class", text: "Class", sort: true },
+    { dataField: "semester", text: "Semester", sort: true },
+    { dataField: "status", text: "Status", sort: true },
+  ]);
   const fiteredDeptOpt = deptOption.filter(function (elem, pos) {
     return deptOption.indexOf(elem) == pos;
   });
-  console.log(fiteredDeptOpt);
+  // console.log(fiteredDeptOpt);
 
   const fiteredSessionOpt = sessionOption.filter(function (elem, pos) {
     return sessionOption.indexOf(elem) == pos;
@@ -49,10 +55,42 @@ const PublishResults = () => {
   });
 
   useEffect(() => {
+    console.log(Object.keys(availableResults));
+    let stdData = [];
+    Object.keys(availableResults).map((key) => {
+      console.log(availableResults[key].class);
+      stdData.push(availableResults[key]);
+    });
+
+    stdData.map((std) => {
+      std.semester == null
+        ? setConfigedBySemester(false)
+        : setConfigedBySemester(true);
+    });
+    // console.log(stdData);
+    setStudentsData([...studentsData, ...stdData]);
+  }, [availableResults]);
+
+  useEffect(() => {
+    if (configedBySemester == false) {
+      const newColumns = columns.filter(
+        (columns) => columns["dataField"] !== "semester"
+      );
+      setColumns(newColumns);
+    }
+    if (configedByClass == false) {
+      const newColumns = columns.filter(
+        (columns) => columns["dataField"] !== "class"
+      );
+      setColumns(newColumns);
+    }
+  }, [configedBySemester]);
+
+  useEffect(() => {
     axios
       .get(api_base_url + "/wp-json/sr/v1/config")
       .then((response) => {
-        setSelectBy(response.data);
+        setSelectBy(response.data[0]);
       })
       .catch((error) => console.log(error));
 
@@ -66,7 +104,7 @@ const PublishResults = () => {
     axios
       .get(api_base_url + "/wp-json/sr/v1/publishing/results")
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         setAvailableResults(response.data);
 
         let newDepts = [Object.values(response.data).map((res) => res.dept)];
@@ -89,22 +127,22 @@ const PublishResults = () => {
   }, []);
 
   const saveDept = (e) => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
     setPublishingData({ ...publishingData, dept: e.target.value });
   };
 
   const saveSession = (e) => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
     setPublishingData({ ...publishingData, session: e.target.value });
   };
 
   const saveSemester = (e) => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
     setPublishingData({ ...publishingData, semester: e.target.value });
   };
 
   const saveClass = (e) => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
     setPublishingData({ ...publishingData, class: e.target.value });
   };
 
@@ -197,125 +235,116 @@ const PublishResults = () => {
 
   return (
     <Fragment>
-      <Container fluid="md">
-        <div className={ModalClasses.ModalBttn}>
-          Publish results by sessions and departments. {"   "}
-          <Button variant="primary" onClick={() => setShow(true)}>
-            Publish Results
-          </Button>
+      <div className={classes.resContainer}>
+        <div className={classes.form_container}>
+          {publishedItems > 0 && (
+            <h6 className="text-success">
+              {publishedItems} results published successfully.
+            </h6>
+          )}
+          {publishedItems == "false" && <h6>No result found to publish.</h6>}
+          {unpublishedItems > 0 && (
+            <h6> {unpublishedItems} results unpublished successfully.</h6>
+          )}
+          {unpublishedItems == "false" && (
+            <h6> No result found to unpublish.</h6>
+          )}
+          <Form className={classes.Form} id="result_publishing_form">
+            <label>Department</label>
+            <select
+              value={publishingData.dept}
+              onChange={saveDept}
+              className="browser-default custom-select"
+            >
+              <option> </option>
+              {fiteredDeptOpt &&
+                fiteredDeptOpt.map((opt, i) => (
+                  <option key={opt + i}>{Cap(opt)}</option>
+                ))}
+            </select>
+            <label>Session</label>
+            <select
+              value={publishingData.session}
+              onChange={saveSession}
+              className="browser-default custom-select"
+            >
+              <option> </option>
+              {fiteredSessionOpt &&
+                fiteredSessionOpt.map((opt, i) => (
+                  <option key={opt + i}>{opt}</option>
+                ))}
+            </select>
+            {selectBy == "semester" && (
+              <>
+                <label>Semester</label>
+
+                <select
+                  value={publishingData.semester}
+                  onChange={saveSemester}
+                  className="browser-default custom-select"
+                >
+                  <option> </option>
+                  {fiteredSemesterOpt &&
+                    fiteredSemesterOpt.map((opt, i) => (
+                      <option key={opt + i}>{Cap(opt)}</option>
+                    ))}
+                </select>
+              </>
+            )}
+
+            {selectBy == "class" && (
+              <>
+                <label>Class</label>
+                <select
+                  value={publishingData.class}
+                  onChange={saveClass}
+                  className="browser-default custom-select"
+                >
+                  <option> </option>
+                  {fiteredClassOpt &&
+                    fiteredClassOpt.map((opt, i) => (
+                      <option key={opt + i}>{Cap(opt)}</option>
+                    ))}
+                </select>
+              </>
+            )}
+            <Button
+              disabled={publishingStatus}
+              onClick={savePublishResults}
+              variant="outline-success"
+              className={classes.bttn}
+            >
+              Publish
+            </Button>
+            {"  "}
+            <Button
+              disabled={unpublishingStatus}
+              onClick={saveUnpublishResults}
+              variant="outline-danger"
+              className={classes.bttn}
+            >
+              Unpublish
+            </Button>
+          </Form>
         </div>
-        <Modal
-          className={ModalClasses.modal}
-          show={show}
-          size="lg"
-          onHide={() => setShow(false)}
-          dialogClassName="modal-90w"
-          aria-labelledby="example-custom-modal-styling-title"
-        >
-          <div className={ModalClasses.modalBody}>
-            <Modal.Header closeButton>
-              <Modal.Title id="example-custom-modal-styling-title">
-                Publish Results
-              </Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <Container fluid="md" className="">
-                {publishedItems > 0 && (
-                  <h6 className="text-success">
-                    {publishedItems} results published successfully.
-                  </h6>
-                )}
-                {publishedItems == "false" && (
-                  <h6>No result found to publish.</h6>
-                )}
-                {unpublishedItems > 0 && (
-                  <h6> {unpublishedItems} results unpublished successfully.</h6>
-                )}
-                {unpublishedItems == "false" && (
-                  <h6> No result found to unpublish.</h6>
-                )}
-                <Form className={classes.Form} id="result_publishing_form">
-                  <label>Department</label>
-                  <select
-                    value={publishingData.dept}
-                    onChange={saveDept}
-                    className="browser-default custom-select"
-                  >
-                    <option> </option>
-                    {fiteredDeptOpt &&
-                      fiteredDeptOpt.map((opt, i) => (
-                        <option key={opt + i}>{Cap(opt)}</option>
-                      ))}
-                  </select>
-                  <label>Session</label>
-                  <select
-                    value={publishingData.session}
-                    onChange={saveSession}
-                    className="browser-default custom-select"
-                  >
-                    <option> </option>
-                    {fiteredSessionOpt &&
-                      fiteredSessionOpt.map((opt, i) => (
-                        <option key={opt + i}>{opt}</option>
-                      ))}
-                  </select>
-                  {selectBy == "semester" && (
-                    <>
-                      <label>Semester</label>
-
-                      <select
-                        value={publishingData.semester}
-                        onChange={saveSemester}
-                        className="browser-default custom-select"
-                      >
-                        <option> </option>
-                        {fiteredSemesterOpt &&
-                          fiteredSemesterOpt.map((opt, i) => (
-                            <option key={opt + i}>{Cap(opt)}</option>
-                          ))}
-                      </select>
-                    </>
-                  )}
-
-                  {selectBy == "class" && (
-                    <>
-                      <label>Class</label>
-                      <select
-                        value={publishingData.class}
-                        onChange={saveClass}
-                        className="browser-default custom-select"
-                      >
-                        <option> </option>
-                        {fiteredClassOpt &&
-                          fiteredClassOpt.map((opt, i) => (
-                            <option key={opt + i}>{Cap(opt)}</option>
-                          ))}
-                      </select>
-                    </>
-                  )}
-                  <Button
-                    disabled={publishingStatus}
-                    onClick={savePublishResults}
-                    variant="outline-success"
-                    className={classes.bttn}
-                  >
-                    Publish
-                  </Button>
-                  {"  "}
-                  <Button
-                    disabled={unpublishingStatus}
-                    onClick={saveUnpublishResults}
-                    variant="outline-danger"
-                    className={classes.bttn}
-                  >
-                    Unpublish
-                  </Button>
-                </Form>
-              </Container>
-            </Modal.Body>
+        {columns.length > 3 && (
+          <div className="text-center">
+            <h5 className={classes.table_heading}>
+              Table for Published/Unpublished Results
+            </h5>
+            <BootstrapTable
+              // striped
+              // hover
+              // condensed
+              bootstrap4
+              keyField="sl"
+              data={studentsData}
+              columns={columns}
+              pagination={paginationFactory({ sizePerPage: 5 })}
+            />
           </div>
-        </Modal>
-      </Container>
+        )}
+      </div>
     </Fragment>
   );
 };

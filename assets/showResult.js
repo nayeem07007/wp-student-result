@@ -129,6 +129,14 @@ jQuery(document).ready(function ($) {
     }
   });
 
+  // Printing result
+  // function printDiv(divName) {
+  //   w = window.open();
+  //   w.document.write($(divName).html());
+  //   w.print();
+  //   w.close();
+  // }
+
   // Search Result
   $("#searchRes").click(function (event) {
     event.preventDefault();
@@ -198,6 +206,28 @@ jQuery(document).ready(function ($) {
         }
       });
     }
+  });
+
+  // Print result call
+  $("#prin_me_link").click(function () {
+    console.log("print clicked!!!");
+
+    //Hide all other elements other than printarea.
+    // $(".resultView").printThis();
+    // $(".resultSearch").hide();
+    // $(".resultView").show();
+    $("div:not(#resultTbl").hide(); // hide everything that isn't #myDiv
+    $("#resultTbl").appendTo("body"); // move #myDiv up to the body
+    window.print();
+
+    // printDiv("#resultView");
+    // window.open();
+    // window.document.write($(".resultView").html());
+    // window.print();
+    // setTimeout(function () {
+    //   window.close();
+    // }, 1000);
+    // return false;
   });
 
   // Reset form.

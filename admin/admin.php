@@ -184,6 +184,16 @@ add_action( 'rest_api_init',  function(){
         'methods' => 'POST',
         'callback' => 'save_config'
     ]);
+
+    register_rest_route( 'sr/v1', 'config_grade', [
+        'methods' => 'GET',
+        'callback' => 'get_config_grade'
+    ]);
+
+    register_rest_route( 'sr/v1', 'config_grade', [
+        'methods' => 'POST',
+        'callback' => 'save_config_grade'
+    ]);
 });
 
 /**
@@ -1504,7 +1514,7 @@ function get_config()
 /**
  * 
  * 
- * Get Configurations.
+ * Save Configurations.
  *
  * @since 1.0.0
  *
@@ -1514,6 +1524,39 @@ function save_config($req)
     $requests = $req->get_params();
 
     update_option('config_by', $requests);
+    
+   return $requests;
+}
+
+/**
+ * 
+ * 
+ * Get Grade Configurations.
+ *
+ * @since 1.0.0
+ *
+ */
+function get_config_grade()
+{
+    $config_grade_by = get_option( 'config_grade_by' );
+
+    return $config_grade_by;
+
+}
+
+/**
+ * 
+ * 
+ * Save Grade Configurations.
+ *
+ * @since 1.0.0
+ *
+ */
+function save_config_grade($req)
+{
+    $requests = $req->get_params();
+
+    update_option('config_grade_by', $requests);
     
    return $requests;
 }

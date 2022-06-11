@@ -21,7 +21,7 @@ const AssignSubjects = () => {
     axios
       .get(api_base_url + "/wp-json/sr/v1/subject")
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         setTags(response.data);
       })
       .catch((error) => console.log(error));
@@ -53,12 +53,12 @@ const AssignSubjects = () => {
         headers: headers,
       })
       .then((response) => {
-        console.log(response);
+        // console.log(response);
       })
       .catch((error) => console.log(error));
   };
 
-  console.log(tags);
+  // console.log(tags);
 
   return (
     <Fragment>

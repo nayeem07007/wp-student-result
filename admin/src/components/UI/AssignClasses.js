@@ -21,7 +21,7 @@ const AssignClasses = () => {
     axios
       .get(api_base_url + "/wp-json/sr/v1/class")
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         setTags(response.data);
       })
       .catch((error) => console.log(error));
@@ -53,7 +53,7 @@ const AssignClasses = () => {
         headers: headers,
       })
       .then((response) => {
-        console.log(response);
+        // console.log(response);
       })
       .catch((error) => console.log(error));
   };

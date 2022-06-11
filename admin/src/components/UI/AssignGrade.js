@@ -60,7 +60,7 @@ const AssignGrade = () => {
         headers: headers,
       })
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         setIsnewSaved(!isNewSaved);
         setMarksFrom("");
         setMarksTo("");
@@ -83,11 +83,11 @@ const AssignGrade = () => {
       })
       .then((response) => {
         setIsnewSaved(!isNewSaved);
-        console.log(response);
+        // console.log(response);
       })
       .catch((error) => console.log(error));
   };
-  console.log(grades);
+  // console.log(grades);
 
   return (
     <Fragment>
