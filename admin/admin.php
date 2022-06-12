@@ -140,6 +140,16 @@ add_action( 'rest_api_init',  function(){
         'callback' => 'get_sub'
     ]);
 
+    register_rest_route( 'sr/v1', '4th/subject', [
+        'methods' => 'POST',
+        'callback' => 'save_4th_sub'
+    ]);
+
+    register_rest_route( 'sr/v1', '4th/subject', [
+        'methods' => 'GET',
+        'callback' => 'get_4th_sub'
+    ]);
+
     register_rest_route( 'sr/v1', 'exam', [
         'methods' => 'POST',
         'callback' => 'save_exam'
@@ -193,6 +203,16 @@ add_action( 'rest_api_init',  function(){
     register_rest_route( 'sr/v1', 'config_grade', [
         'methods' => 'POST',
         'callback' => 'save_config_grade'
+    ]);
+
+    register_rest_route( 'sr/v1', '4th_sub_point', [
+        'methods' => 'GET',
+        'callback' => 'get_4th_sub_point'
+    ]);
+
+    register_rest_route( 'sr/v1', '4th_sub_point', [
+        'methods' => 'POST',
+        'callback' => 'save_4th_sub_point'
     ]);
 });
 
@@ -1348,6 +1368,65 @@ function save_sub($req)
 /**
  * 
  * 
+ * Get table 4th Subjects.
+ *
+ * @since 1.0.0
+ *
+ */
+function get_4th_sub()
+{
+    global $wpdb;
+    $sub_tbl = $wpdb->prefix . 'std_res_beta_subject';
+    $field = 'subject_name';
+
+    $subs = $wpdb->get_results( $wpdb->prepare( "SELECT {$field} FROM {$sub_tbl} where subject_info='4th'" ));
+
+    $sub_data = [];
+
+    foreach($subs as $sub){
+        $sub_data[] = $sub->subject_name;
+    }
+    
+    return $sub_data;
+}
+
+/**
+ * 
+ * 
+ * Save 4th Subject.
+ *
+ * @since 1.0.0
+ *
+ */
+function save_4th_sub($req)
+{
+    global $wpdb;
+    $requests = $req->get_params();
+    
+    // return $requests;
+
+
+    $sub_tbl = $wpdb->prefix . 'std_res_beta_subject';
+    $field = 'subject_name';
+
+    // $wpdb->query("TRUNCATE TABLE $sub_tbl");
+    $wpdb->delete($sub_tbl, [
+        'subject_info' => '4th',
+    ] );
+
+    foreach($requests as $request){
+        $wpdb->insert($sub_tbl, array(
+        $field => $request,
+        'subject_info' => '4th',
+        ));
+    }
+
+   return $requests;
+}
+
+/**
+ * 
+ * 
  * Get table Exams.
  *
  * @since 1.0.0
@@ -1437,6 +1516,40 @@ function save_grade($req)
         "grade_point" => floatval($requests['point']),
     
     ));
+
+   return $requests;
+}
+
+/**
+ * 
+ * 
+ * Get Grades.
+ *
+ * @since 1.0.0
+ *
+ */
+function get_4th_sub_point()
+{
+    $points_diff = get_option('4th_sub_point_diff');
+   
+
+    return $points_diff;
+   
+}
+
+/**
+ * 
+ * 
+ * Save Grades.
+ *
+ * @since 1.0.0
+ *
+ */
+function save_4th_sub_point($req)
+{
+    $requests = $req->get_params();
+
+    update_option('4th_sub_point_diff', $requests);
 
    return $requests;
 }

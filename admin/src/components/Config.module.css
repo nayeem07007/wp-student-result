@@ -1,8 +1,9 @@
 .container {
   background-color: rgba(215, 230, 236, 0.801);
-  padding: 5%;
+  padding: 3%;
+  margin: 2%;
   border: 3px transparent grey;
-  border-radius: 1%;
+  /* border-radius: 2%; */
 }
 
 .radioContainer {

@@ -96,7 +96,7 @@ const AssignClasses = () => {
 
               <h5>Add Classes</h5>
               <div className={classes.fields}>
-                <h6>
+                <h6 className={classes.class_heading}>
                   Please, Insert your required class name and press Enter. Click
                   the cross button to remove it.
                 </h6>

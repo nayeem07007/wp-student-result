@@ -127,15 +127,12 @@ const Config = () => {
       .then((response) => null)
       .catch((error) => console.log(error));
   };
-
-  // console.log("class : " + isClass);
-  // console.log("semester : " + isSemester);
   return (
     <Fragment>
       {isLoading === true ? (
         <Loading />
       ) : (
-        <Container fluid="md" className={classes.container}>
+        <div className={classes.container}>
           <div className={classes.radioContainer}>
             <h4>How would you like to maintain students?</h4>
             <div>
@@ -188,7 +185,7 @@ const Config = () => {
           <AssignExams />
           <AssignGrade />
           <Assign4thSubject />
-        </Container>
+        </div>
       )}
     </Fragment>
   );

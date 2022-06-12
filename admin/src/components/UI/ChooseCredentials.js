@@ -89,7 +89,7 @@ const ChooseCredentials = (props) => {
   // console.log(selectBy);
   return (
     <Fragment>
-      <Container fluid="md">
+      <div className={classes.container}>
         <h4>Select Credentials</h4>
         <div className={classes.credentials}>
           <label>Department</label>
@@ -147,7 +147,7 @@ const ChooseCredentials = (props) => {
             </>
           )}
         </div>
-      </Container>
+      </div>
     </Fragment>
   );
 };

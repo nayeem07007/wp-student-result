@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import PublishResults from "./UI/PublishResults";
+import classes from "./Result.module.css";
 import FieldSelector from "./UI/FieldSelector";
 import FileInput from "./UI/FileInput";
 import Search from "./UI/SearchResult";
@@ -7,7 +7,7 @@ import ChooseCredentials from "./UI/ChooseCredentials";
 import Loading from "./UI/Loading";
 
 const Result = () => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // Turn it back to true
   const [searchResult, setSearchResult] = useState([]);
   const [isFilled, setIsFilled] = useState(false);
   const [filledCredentials, setFilledCredentials] = useState({});
@@ -30,8 +30,7 @@ const Result = () => {
       {isLoading === true ? (
         <Loading />
       ) : (
-        <div>
-          <PublishResults />
+        <div className={classes.container}>
           <ChooseCredentials onFill={filledhandler} />
           <FileInput
             url={api_base_url + "/wp-json/sr/v1/import/results"}
