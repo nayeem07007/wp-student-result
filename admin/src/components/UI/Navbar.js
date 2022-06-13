@@ -69,7 +69,7 @@ const NavbarSection = (props) => {
                   Dashboard
                 </Nav.Link> */}
                 <Nav.Link active="true" href="" onClick={showResult}>
-                  Result
+                  Result Entry
                 </Nav.Link>
                 <Nav.Link active="true" href="" onClick={showStudent}>
                   Student

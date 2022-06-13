@@ -4,8 +4,14 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
 import DebounceInput from "react-debounce-input";
+import Table from "react-bootstrap/Table";
+import Select from "react-select";
+import classes from "./SearchResult.module.css";
 
 const SearchResult = (props) => {
+  const Cap = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
   const [inputs, setInputs] = useState({
     key: "",
     value: "",
@@ -13,6 +19,7 @@ const SearchResult = (props) => {
 
   const [options, setOptions] = useState([]);
   const [results, setResults] = useState([]);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     axios
@@ -46,20 +53,46 @@ const SearchResult = (props) => {
   };
   // console.log(inputs);
 
-  {
-    results.length > 0 && props.onSearch(results);
-  }
-  // console.log(options);
+  const deleteResult = (res) => {
+    setDeleting(true);
+    console.log("delete clicked!!!");
+    console.log(res);
+    const headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    };
+
+    axios
+      .post(
+        api_base_url + "/wp-json/sr/v1/delete/result",
+        JSON.stringify(res),
+        {
+          headers: headers,
+        }
+      )
+      .then((response) => {
+        console.log(response);
+        const newResults = results.filter((results) => results !== res);
+        setResults(newResults);
+        setDeleting(false);
+      })
+      .catch((error) => console.log(error));
+  };
+
   return (
     <Fragment>
-      <Container fluid="md">
-        <h4>Search Result</h4>
+      <div className="container m-4">
+        <h5>Search Result</h5>
         <Form>
-          <Form.Group className="mb-3" controlId="formSelect">
+          <Form.Group
+            className={`"col-md-4 mb-3" ${classes.search_form}`}
+            controlId="formSelect"
+          >
             <Form.Label>
               <b>Search by : </b>
             </Form.Label>
             <Form.Select
+              className={classes.select_f}
               id="search_tag"
               defaultValue={"choose"}
               onChange={(e) => setInputs({ inputs: "", key: e.target.value })}
@@ -76,7 +109,10 @@ const SearchResult = (props) => {
             </Form.Select>
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="formBasicPassword">
+          <Form.Group
+            className={`"col-md-4 mb-3"  ${classes.search_form}`}
+            controlId="formBasicPassword"
+          >
             <Form.Label>
               <b>Value : </b>
             </Form.Label>
@@ -84,7 +120,7 @@ const SearchResult = (props) => {
             <DebounceInput
               type="any"
               name={"Value"}
-              className="form-control"
+              className={`"form-control" ${classes.search_form}`}
               placeholder={" "}
               minLength={1}
               debounceTimeout={1000}
@@ -92,11 +128,68 @@ const SearchResult = (props) => {
             />
           </Form.Group>
 
-          <Button variant="primary" onClick={search}>
+          <Button
+            className={classes.search_btn}
+            variant="primary"
+            onClick={search}
+          >
             Search
           </Button>
         </Form>
-      </Container>
+
+        {results.length > 0 && (
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                {results[0].map(
+                  (result) =>
+                    Object.values(result).toString() != "" && (
+                      <th
+                        key={
+                          Object.keys(result).toString() +
+                          Object.keys(result).toString()
+                        }
+                      >
+                        {Cap(Object.keys(result).toString())}
+                      </th>
+                    )
+                )}
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {results.map((res) => (
+                <tr key={Object.values(res[0]).toString()}>
+                  {res.map(
+                    (result) =>
+                      Object.values(result).toString() != "" && (
+                        <td
+                          key={
+                            Object.values(result).toString() +
+                            Object.keys(result).toString()
+                          }
+                        >
+                          {Object.values(result).toString()}
+                        </td>
+                      )
+                  )}
+                  <td>
+                    <button
+                      type="submit"
+                      className="btn-danger"
+                      onClick={() => {
+                        deleteResult(res);
+                      }}
+                    >
+                      {deleting ? "Deleting..." : "Delete"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
+      </div>
     </Fragment>
   );
 };

@@ -5,3 +5,13 @@
   border: 3px transparent grey;
   /* border-radius: 2%; */
 }
+.std_sec {
+  margin: 3%;
+}
+.std_title {
+  float: left;
+  margin: 0.5% 2%;
+}
+.std_sec Button {
+  margin: 0 0.5%;
+}

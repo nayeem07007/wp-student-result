@@ -237,6 +237,7 @@ const PublishResults = () => {
     <Fragment>
       <div className={classes.resContainer}>
         <div className={classes.form_container}>
+          <p className="h5"> Publish Or unpublish results below.</p>
           {publishedItems > 0 && (
             <h6 className="text-success">
               {publishedItems} results published successfully.

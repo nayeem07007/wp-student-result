@@ -8,7 +8,6 @@ import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.m
 import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
 import { CSVLink } from "react-csv";
-import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import cellEditFactory from "react-bootstrap-table2-editor";
 import axios from "axios";
@@ -47,7 +46,6 @@ const FieldSelector = (props) => {
   const [resLength, setReslength] = useState("");
   const [subjects, setSubjects] = useState([]);
   const [exams, setExams] = useState([]);
-  const [deleting, setDeleting] = useState(false);
 
   const subOpts = subjects.map((sub, i) => ({ value: sub, label: sub }));
   const examOpts = exams.map((exam, i) => ({ value: exam, label: exam }));
@@ -73,13 +71,6 @@ const FieldSelector = (props) => {
   useEffect(() => {
     setStudentsData([tableData]);
   }, [tags]);
-
-  useEffect(() => {
-    if (props.searchRes.length > 0) {
-      setResults(props.searchRes);
-      setReslength(props.searchRes.length);
-    }
-  }, [props.searchRes]);
 
   useEffect(() => {
     fields.map((f, i) => {
@@ -192,38 +183,13 @@ const FieldSelector = (props) => {
       setTableData({ ...tableData, [Cap("exam")]: Cap(opt["value"]) });
     });
   };
-  const deleteResult = (res) => {
-    setDeleting(true);
-    console.log("delete clicked!!!");
-    console.log(res);
-    const headers = {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    };
-
-    axios
-      .post(
-        api_base_url + "/wp-json/sr/v1/delete/result",
-        JSON.stringify(res),
-        {
-          headers: headers,
-        }
-      )
-      .then((response) => {
-        console.log(response);
-        const newResults = results.filter((results) => results !== res);
-        setResults(newResults);
-        setDeleting(false);
-      })
-      .catch((error) => console.log(error));
-  };
 
   console.log(results);
 
   return (
     <Fragment>
       <Container fluid="md">
-        <h2>Create Table</h2>
+        {/* <h4>Insert Result</h4> */}
         <div className={classes.fields}>
           <div className={classes.multiSelect}>
             <label class="form-label select-label">Select Subjects</label>
@@ -330,58 +296,6 @@ const FieldSelector = (props) => {
                 blurToSave: true,
               })}
             />
-          )}
-          {results.length > 0 && (
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  {results[0].map(
-                    (result) =>
-                      Object.values(result).toString() != "" && (
-                        <th
-                          key={
-                            Object.keys(result).toString() +
-                            Object.keys(result).toString()
-                          }
-                        >
-                          {Cap(Object.keys(result).toString())}
-                        </th>
-                      )
-                  )}
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {results.map((res) => (
-                  <tr key={Object.values(res[0]).toString()}>
-                    {res.map(
-                      (result) =>
-                        Object.values(result).toString() != "" && (
-                          <td
-                            key={
-                              Object.values(result).toString() +
-                              Object.keys(result).toString()
-                            }
-                          >
-                            {Object.values(result).toString()}
-                          </td>
-                        )
-                    )}
-                    <td>
-                      <button
-                        type="submit"
-                        className="btn-danger"
-                        onClick={() => {
-                          deleteResult(res);
-                        }}
-                      >
-                        {deleting ? "Deleting..." : "Delete"}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
           )}
         </div>
       </Container>

@@ -90,8 +90,11 @@ const ChooseCredentials = (props) => {
   return (
     <Fragment>
       <div className={classes.container}>
-        <h4>Select Credentials</h4>
+        {/* <h4>Select Credentials</h4> */}
         <div className={classes.credentials}>
+          <p className="h6 text-danger m-3">
+            Select these credentials to insert result.
+          </p>
           <label>Department</label>
           <select
             onChange={saveDeptCredentials}

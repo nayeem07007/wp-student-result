@@ -53,15 +53,12 @@ const ShowStudents = () => {
 
   return (
     <Fragment>
-      <Container fluid="md" className={classes.container}>
+      <div className={classes.container}>
         <h5>Students Table</h5>
+        <hr />
         <div className="table">
           {studentsData.length > 0 && (
-            <Table
-              striped
-              bordered
-              hover
-            >
+            <Table striped bordered hover>
               <thead>
                 <tr>
                   {studentsData[0].map(
@@ -113,7 +110,7 @@ const ShowStudents = () => {
             </Table>
           )}
         </div>
-      </Container>
+      </div>
     </Fragment>
   );
 };
