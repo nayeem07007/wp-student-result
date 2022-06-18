@@ -18,6 +18,7 @@ const PublishResults = () => {
   // const [show, setShow] = useState(false);
   const [configedBySemester, setConfigedBySemester] = useState(false);
   const [configedByClass, setConfigedByClass] = useState(true);
+  const [isChanged, setIsChanged] = useState(false);
   const [availableResults, setAvailableResults] = useState([]);
   const [publishingData, setPublishingData] = useState({});
   const [selectBy, setSelectBy] = useState("");
@@ -37,6 +38,7 @@ const PublishResults = () => {
     { dataField: "semester", text: "Semester", sort: true },
     { dataField: "status", text: "Status", sort: true },
   ]);
+  
   const fiteredDeptOpt = deptOption.filter(function (elem, pos) {
     return deptOption.indexOf(elem) == pos;
   });
@@ -68,8 +70,8 @@ const PublishResults = () => {
         : setConfigedBySemester(true);
     });
     // console.log(stdData);
-    setStudentsData([...studentsData, ...stdData]);
-  }, [availableResults]);
+    setStudentsData([...stdData]);
+  }, [availableResults, isChanged]);
 
   useEffect(() => {
     if (configedBySemester == false) {
@@ -124,7 +126,7 @@ const PublishResults = () => {
         setSemesterOption(...newSemester);
       })
       .catch((error) => console.log(error));
-  }, []);
+  }, [isChanged]);
 
   const saveDept = (e) => {
     // console.log(e.target.value);
@@ -147,6 +149,7 @@ const PublishResults = () => {
   };
 
   const savePublishResults = () => {
+    setIsChanged(false);
     setUnpublishedItems("");
     const headers = {
       "Content-Type": "application/json",
@@ -166,6 +169,7 @@ const PublishResults = () => {
   };
 
   const saveUnpublishResults = () => {
+    setIsChanged(true);
     setPublishedItems("");
     const headers = {
       "Content-Type": "application/json",
@@ -231,7 +235,7 @@ const PublishResults = () => {
         }
       });
     }
-  }, [publishingData]);
+  }, [publishingData, isChanged]);
 
   return (
     <Fragment>
@@ -334,9 +338,9 @@ const PublishResults = () => {
               Table for Published/Unpublished Results
             </h5>
             <BootstrapTable
-              // striped
-              // hover
-              // condensed
+              striped
+              hover
+              condensed
               bootstrap4
               keyField="sl"
               data={studentsData}

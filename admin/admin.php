@@ -308,18 +308,31 @@ function sr_show_result()
 
     $result_tbl = $wpdb->prefix ."std_res_beta_result";
     
-
+    $filtered_result = [];
     $results = $wpdb->get_results ("SELECT res_info FROM $result_tbl");
     
     $result = [];
     foreach ($results as $res){
-        $result[] = json_decode($res->std_info, true);
-    }
+        $filtered = [];
+        $result[] = json_decode($res->res_info, true);
+        $filter_res = json_decode($res->res_info, true);
 
-    if( empty($result) ){
+        foreach( $filter_res as $key => $value){
+            $myarray = (array)$value;
+            $key = key($myarray);
+
+            if( !empty($value[$key]) && $key != 'sl' ){
+                $filtered += [ $key => $value[$key]];
+            }
+
+        }
+        array_push($filtered_result, $filtered);
+    }
+    
+    if( empty($filtered_result) ){
         return $result_tbl;
     }
-    return($result); 
+    return ($filtered_result);
 }
 
 /**

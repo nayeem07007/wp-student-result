@@ -4,7 +4,9 @@ jQuery(document).ready(function ($) {
   $("#fail_msg").hide();
 
   // Hide table view
-  $(".resultView").hide();
+  // $(".resultView").hide();
+
+  $("#searchRes").attr("disabled", false); // delete it later
 
   // Initialize needed veriables.
   var api = api_base_url + "/wp-json/sr/v1/search/results";
@@ -15,7 +17,7 @@ jQuery(document).ready(function ($) {
   var results = null;
 
   // Disable submit button if input is empty
-  $("#searchRes").attr("disabled", true);
+  // $("#searchRes").attr("disabled", true); enable it
   // Disable validation if input roll is empty
   $("#sr_validate").attr("disabled", "disabled");
 
@@ -118,24 +120,39 @@ jQuery(document).ready(function ($) {
     var input = $(this).val();
     $("#fail_msg").hide();
 
-    if (input == total) {
-      console.log("success!!!");
-      $("#fail_msg").hide();
-      $("#searchRes").attr("disabled", false);
-    } else {
-      console.log("failed!!!");
-      $("#fail_msg").show();
-      $("#searchRes").attr("disabled", "disabled");
-    }
+    // if (input == total) {
+    //   console.log("success!!!");
+    //   $("#fail_msg").hide();
+    //   $("#searchRes").attr("disabled", false);
+    // } else {
+    //   console.log("failed!!!");
+    //   $("#fail_msg").show();
+    //   $("#searchRes").attr("disabled", "disabled");
+    // }
+
+    $("#searchRes").attr("disabled", false); // delete it later
   });
 
-  // Printing result
-  // function printDiv(divName) {
-  //   w = window.open();
-  //   w.document.write($(divName).html());
-  //   w.print();
-  //   w.close();
-  // }
+  // Printing result function
+  function printDiv() {
+    var divToPrint = document.getElementById("resModalBody");
+
+    var newWin = window.open("", "Print-Window");
+
+    newWin.document.open();
+
+    newWin.document.write(
+      '<html><body onload="window.print()">' +
+        divToPrint.innerHTML +
+        "</div></body></html>"
+    );
+
+    newWin.document.close();
+
+    setTimeout(function () {
+      newWin.close();
+    }, 10);
+  }
 
   // Search Result
   $("#searchRes").click(function (event) {
@@ -160,10 +177,11 @@ jQuery(document).ready(function ($) {
         console.log(data[0]);
         if (data.length > 0) {
           $("#headerTitle").empty();
-          $("<h4>Student Reesult</h4>").appendTo("#headerTitle");
+          // $("<h4>Student Reesult</h4>").appendTo("#headerTitle");
         }
-
-        $(".resultView").show();
+        // $(".resultView").show(); enable it if needed
+        $("#resDisplayModal").trigger("focus");
+        $("#resDisplayModal").show();
         generateTable(data[0]);
       },
     });
@@ -172,7 +190,7 @@ jQuery(document).ready(function ($) {
     function generateTable(results) {
       console.log(results);
       $("#rtBody").empty();
-      $(".resultView").show();
+      // $(".resultView").show();
       if (!results) {
         $("#headerTitle").empty();
         $("<h4 class='text-danger'>No result found</h4>").appendTo(
@@ -188,9 +206,9 @@ jQuery(document).ready(function ($) {
           if (Object.keys(results[key]) == "cgpa") {
             console.log(results[key].cgpa.toFixed(2));
             $("#rtBody").append(
-              "<tr><th class='col-md-9' scope='row'>" +
+              "<tr><th class='col-md-3' scope='row'>" +
                 Object.keys(results[key]) +
-                "</th><td>" +
+                "</th><td class='col-md-3'>" +
                 results[key].cgpa.toFixed(2) +
                 "</td></tr>"
             );
@@ -211,14 +229,17 @@ jQuery(document).ready(function ($) {
   // Print result call
   $("#prin_me_link").click(function () {
     console.log("print clicked!!!");
+    printDiv();
+    // printDiv("#resModalBody");
 
     //Hide all other elements other than printarea.
     // $(".resultView").printThis();
     // $(".resultSearch").hide();
-    // $(".resultView").show();
-    $("div:not(#resultTbl").hide(); // hide everything that isn't #myDiv
-    $("#resultTbl").appendTo("body"); // move #myDiv up to the body
-    window.print();
+    // $("#resDisplayModal").show();
+
+    // $("div:not(#resDisplayModal").hide(); // hide everything that isn't #myDiv
+    // $("#resDisplayModal").appendTo("body"); // move #myDiv up to the body
+    // window.print();
 
     // printDiv("#resultView");
     // window.open();
@@ -233,12 +254,23 @@ jQuery(document).ready(function ($) {
   // Reset form.
   $("#resFormReset").click(function (event) {
     event.preventDefault();
+    resetRes();
+  });
+
+  $("#resDisplayModal").focusout(function () {
+    resetRes();
+  });
+
+  // Reset function
+  function resetRes() {
+    $("#resDisplayModal").hide();
+
     $("#fail_msg").hide();
     $("#SearchResForm").trigger("reset");
     $("#sr_validate").attr("disabled", "disabled");
-    $(".resultView").hide();
-    $("#searchRes").attr("disabled", true);
+    // $(".resultView").hide();
+    // $("#searchRes").attr("disabled", true); enable it later
     $("#rtBody").find("th").text("");
     $("#rtBody").find("td").text("");
-  });
+  }
 });

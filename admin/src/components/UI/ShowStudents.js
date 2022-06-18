@@ -3,7 +3,6 @@ import Container from "react-bootstrap/esm/Container";
 import classes from "./ShowStudents.module.css";
 import Table from "react-bootstrap/Table";
 import axios from "axios";
-import paginationFactory from "react-bootstrap-table2-paginator";
 
 const ShowStudents = () => {
   const Cap = (str) => {
@@ -57,7 +56,7 @@ const ShowStudents = () => {
         <h5>Students Table</h5>
         <hr />
         <div className="table">
-          {studentsData.length > 0 && (
+          {studentsData[0] != undefined && (
             <Table striped bordered hover>
               <thead>
                 <tr>

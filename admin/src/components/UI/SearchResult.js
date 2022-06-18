@@ -7,6 +7,10 @@ import DebounceInput from "react-debounce-input";
 import Table from "react-bootstrap/Table";
 import Select from "react-select";
 import classes from "./SearchResult.module.css";
+import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
+import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
+import BootstrapTable from "react-bootstrap-table-next";
+import paginationFactory from "react-bootstrap-table2-paginator";
 
 const SearchResult = (props) => {
   const Cap = (str) => {
@@ -19,17 +23,39 @@ const SearchResult = (props) => {
 
   const [options, setOptions] = useState([]);
   const [results, setResults] = useState([]);
+  const [studentsData, setStudentsData] = useState([]);
+  const [showResults, setShowResults] = useState(true);
   const [deleting, setDeleting] = useState(false);
+  const [columns, setColumns] = useState([
+    { dataField: "dept", text: "Department", sort: true },
+    // { dataField: "session", text: "Session", sort: true },
+    // { dataField: "class", text: "Class", sort: true },
+    // { dataField: "semester", text: "Semester", sort: true },
+    // { dataField: "status", text: "Status", sort: true },
+  ]);
 
   useEffect(() => {
     axios
       .get(api_base_url + "/wp-json/sr/v1/getTheads")
       .then((response) => {
         setOptions(response.data);
-        // console.log(response);
       })
       .catch((error) => console.log(error));
-  });
+
+    axios
+      .get(api_base_url + "/wp-json/sr/v1/results")
+      .then((response) => {
+        // console.log(response.data);
+        setStudentsData(response.data);
+        let newCol = [];
+        Object.keys(response.data[0]).map((col) => {
+          newCol.push({ dataField: col, text: Cap(col), sort: true });
+          // { dataField: col, text: Cap(col), sort: true },
+        });
+        setColumns([...newCol]);
+      })
+      .catch((error) => console.log(error));
+  }, []);
 
   const search = (e) => {
     e.preventDefault();
@@ -47,11 +73,12 @@ const SearchResult = (props) => {
       })
       .then((response) => {
         // console.log(response.data);
+        setShowResults(false);
         setResults(response.data);
       })
       .catch((error) => console.log(error));
   };
-  // console.log(inputs);
+  console.log(columns);
 
   const deleteResult = (res) => {
     setDeleting(true);
@@ -188,6 +215,24 @@ const SearchResult = (props) => {
               ))}
             </tbody>
           </Table>
+        )}
+
+        {showResults == true && (
+          <div className="text-center">
+            <h5 className={classes.table_heading}>
+              Table for Published/Unpublished Results
+            </h5>
+            <BootstrapTable
+              striped
+              hover
+              condensed
+              bootstrap4
+              keyField="sl"
+              data={studentsData}
+              columns={columns}
+              pagination={paginationFactory({ sizePerPage: 5 })}
+            />
+          </div>
         )}
       </div>
     </Fragment>

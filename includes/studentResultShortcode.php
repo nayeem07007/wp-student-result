@@ -112,8 +112,24 @@ function results_shortcode()
 
    $html .= "</div>";
    $html .= "</div>";
+
+
+
+   $html .= __("<div class='modal' id='resDisplayModal' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' >
+  <div class='modal-dialog' role='document'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h5 class='modal-title' id='exampleModalLabel'>Student Results</h5>
+        <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+          <span aria-hidden='true'>&times;</span>
+        </button>
+      </div>
+      <div class='modal-body' id='resModalBody'>
+      ", 'Student-Result');
+
+
+
    $html .= __("<div class='resultView' style='margin:5%; padding:10px; border: 2px solid grey; border-radius:15px;' >", 'Student-Result');
-   $html .= __("<Button id='prin_me_link'class='float-right btn-warning'>print</Button>", 'Student-Result');
    
    $html .= __("<div id='headerTitle'>", 'Student-Result');
    $html .= "</div>";
@@ -126,6 +142,15 @@ function results_shortcode()
    $html .= "</div>";
 
    $html .= "</div>";
+
+
+   $html .= "</div>";
+       $html .= __("<Button id='prin_me_link'class='float-right btn-warning'>print</Button>", 'Student-Result');
+    $html .="</div>
+            </div>
+            </div>";
+
+
    $html .= "</div>";
 
     return( $html);     
