@@ -218,7 +218,7 @@ const SearchResult = (props) => {
         )}
 
         {showResults == true && (
-          <div className="text-center">
+          <div className="text-center mt-4">
             <h5 className={classes.table_heading}>
               Table for Published/Unpublished Results
             </h5>

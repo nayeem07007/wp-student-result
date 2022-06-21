@@ -86,6 +86,11 @@ final class Student_Results {
             $instance = new self();
         }
 
+        // Start Session
+        if (!session_id()) {
+            session_start();
+        }
+
         return $instance;
     }
 
