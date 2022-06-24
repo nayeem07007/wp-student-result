@@ -27,11 +27,11 @@ const SearchResult = (props) => {
   const [showResults, setShowResults] = useState(true);
   const [deleting, setDeleting] = useState(false);
   const [columns, setColumns] = useState([
-    { dataField: "dept", text: "Department", sort: true },
+    // { dataField: "dept", text: "Department", sort: true },
     // { dataField: "session", text: "Session", sort: true },
     // { dataField: "class", text: "Class", sort: true },
     // { dataField: "semester", text: "Semester", sort: true },
-    // { dataField: "status", text: "Status", sort: true },
+    { dataField: "status", text: "Status", sort: true },
   ]);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const SearchResult = (props) => {
     axios
       .get(api_base_url + "/wp-json/sr/v1/results")
       .then((response) => {
-        // console.log(response.data);
+        console.log(response);
         setStudentsData(response.data);
         let newCol = [];
         Object.keys(response.data[0]).map((col) => {
@@ -219,9 +219,7 @@ const SearchResult = (props) => {
 
         {showResults == true && (
           <div className="text-center mt-4">
-            <h5 className={classes.table_heading}>
-              Table for Published/Unpublished Results
-            </h5>
+            <h5 className={classes.table_heading}>Results Table</h5>
             <BootstrapTable
               striped
               hover

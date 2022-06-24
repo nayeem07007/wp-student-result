@@ -202,7 +202,10 @@ jQuery(document).ready(function ($) {
       var keys = Object.keys(results);
 
       $.each(keys, function (index, key) {
-        if (Object.keys(results[key]) != "sl") {
+        if (
+          Object.keys(results[key]) != "sl" &&
+          Object.keys(results[key]) != "total"
+        ) {
           if (Object.keys(results[key]) == "cgpa") {
             console.log(results[key].cgpa.toFixed(2));
             $("#rtBody").append(

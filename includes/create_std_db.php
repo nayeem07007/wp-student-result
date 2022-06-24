@@ -36,8 +36,8 @@ function std_result_create_db() {
         res_subject_code        int(10) NULL,
         res_total_marks         int(10) NULL,
         res_marks_obtained      int(10) NULL,
-        res_grade               int(10) NULL,
-        res_grade_point         int(10) NULL,
+        res_grade               text NULL,
+        res_grade_point         text NULL,
         res_info                text NULL,
         std_id mediumint(9)     NOT NULL,
         UNIQUE KEY id (id)

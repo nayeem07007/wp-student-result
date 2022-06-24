@@ -310,22 +310,25 @@ function sr_show_result()
     
     $filtered_result = [];
     $results = $wpdb->get_results ("SELECT res_info FROM $result_tbl");
-    
+
+    $subjects = get_sub();
+        
     $result = [];
     foreach ($results as $res){
         $filtered = [];
-        $result[] = json_decode($res->res_info, true);
+        // $result[] = json_decode($res->res_info, true);
         $filter_res = json_decode($res->res_info, true);
-
+        
         foreach( $filter_res as $key => $value){
             $myarray = (array)$value;
             $key = key($myarray);
-
+        
             if( !empty($value[$key]) && $key != 'sl' ){
                 $filtered += [ $key => $value[$key]];
             }
 
         }
+        unset($filtered['total']);
         array_push($filtered_result, $filtered);
     }
     
@@ -480,7 +483,7 @@ function sr_show_search_result( $req )
             $semester = '';
             $class = '';
             $exam = '';
-       
+            
             foreach($r as $dt){
                 if(!empty($dt->class)){
                     $class = $dt->class;
@@ -718,9 +721,16 @@ function sr_save_result($req)
     $sub_tbl = $wpdb->prefix . 'std_res_beta_subject'; 
     $totalInserted = 0;
 
+    $fourthSubs = get_4th_sub();
+    $fourth_sub_points = get_4th_sub_point();
+    $points_diff = $fourth_sub_points['gets'] - $fourth_sub_points['counts'];
+    $has_fourth_sub = false;
+   
     $show_results_in = get_config_grade();
     $subs = $wpdb->get_results( $wpdb->prepare( "SELECT subject_name FROM {$sub_tbl}" ));
 
+    $sub_grades = [];
+    $sub_grade_points = [];
     $sub_data = [];
     foreach($subs as $sub){
         $sub_data[] = $sub->subject_name;
@@ -743,21 +753,47 @@ function sr_save_result($req)
 
 
         foreach($keys as $key){
-            $result[] = [$key => $request[$key]];
             if(strtolower($key) == 'name'){
                 $name = $request[$key];
+            }
+            
+            if(in_array(strtolower($key), $sub_data)){
+                foreach($grades as $grade){
+                    if($request[$key] >= $grade->grade_min_mark && $request[$key] <= $grade->grade_max_mark ){
+                        $result[] = [ $key => $grade->grade_point];
+                    }
+                }
+            }else{
+                $result[] = [$key => $request[$key]];
             }
         }
         foreach($sub_data as $sub){
             foreach($keys as $key){
                 if(strtolower($key) == strtolower($sub)){
+                    foreach($fourthSubs as $fourth_sub){
+                        if(strtolower($key) == strtolower($fourth_sub)){ 
+                            $has_fourth_sub = true ;
+                        }
+                    }
                     $sub_marks[] = $request[$key];
                     $entry_subjects[] = strtolower($key);
 
                     foreach($grades as $grade){
                         if($request[$key] >= $grade->grade_min_mark && $request[$key] <= $grade->grade_max_mark ){
-                            $sub_grade_point[] = [ $key => $grade->grade_point];
-                            $grade_point[] = $grade->grade_point;
+                            $sub_grade_point[] = [ $key => $grade->grade_point];                          
+                            
+                            $sub_grades[] = [strtolower($key) => $grade->grade_title,];// To save subject wise grades
+                            $sub_grade_points[] = [strtolower($key) => $grade->grade_point,];// To save subject wise points
+
+                            if($has_fourth_sub == true){
+                                if( $grade->grade_point >= $points_diff){
+                                    $grade->grade_point -= $points_diff;
+                                }else{
+                                    $grade->grade_point = 0;
+                                }
+                            }
+
+                            $grade_point[] = $grade->grade_point;// To cumulate points
                         }
                     }   
                 }
@@ -775,46 +811,26 @@ function sr_save_result($req)
 
             if(!empty($sub_total)){
                 $result[] = [ 'total' => $sub_total ];
-
-                // if(empty($fourth_sub_point)){
-                //     $fourth_sub_point = check_4th_sub($entry_subjects);
-                //     $minus_sub = count($fourth_sub_point);
-                //     $point_diff = get_4th_sub_point();
-                //     $minus_point = $point_diff['gets'] - $point_diff['counts'];
-                // }
-
             }
-
             if(!empty($grade_point)){
                 $sub_grade_total = array_sum($grade_point);
                 $items = count($grade_point);
-    
-                // if(empty($fourth_sub_point)){
-                //     $fourth_sub_point = check_4th_sub($entry_subjects);
-                //     $minus_sub = count($fourth_sub_point);
-                //     $point_diff = get_4th_sub_point();
-                //     $minus_point = $point_diff['gets'] - $point_diff['counts'];
-                // }
-
-                // return $items;
-                // $minus_point? $sub_grade_total - $minus_point : '' ;
-                // $minus_sub? $items - $minus_sub : '' ;
+                $has_fourth_sub == true ? $items -= 1 : '' ;
                 $cgpa = $sub_grade_total / $items;
                 $result[] = [ $show_results_in[0]  => round($cgpa, 2) ];
             }
-
             // Insert Record
             $wpdb->insert($wpdb->prefix . 'std_res_beta_result', array(
                 'res_info' => json_encode($result), 
-                'res_subject' => 'not published'
+                'res_subject' => 'not published',
+                'res_grade' => json_encode($sub_grades),
+                'res_grade_point' => json_encode($sub_grade_points),
             ));
 
             if($wpdb->insert_id > 0){
                 $totalInserted++;
             }
         }
-
-       
     }
     return $totalInserted;   
 }
@@ -830,6 +846,12 @@ function sr_save_imported_result($req)
 { 
     global $wpdb;
 
+    $fourthSubs = get_4th_sub();
+    $fourth_sub_points = get_4th_sub_point();
+    $points_diff = $fourth_sub_points['gets'] - $fourth_sub_points['counts'];
+    $has_fourth_sub = false;
+    $sub_grades = [];
+    $sub_grade_points = [];
     $result_tbl = $wpdb->prefix . 'std_res_beta_result';
     $sub_tbl = $wpdb->prefix . 'std_res_beta_subject';
     $grade_tbl = $wpdb->prefix . 'std_res_beta_grade';
@@ -864,6 +886,8 @@ function sr_save_imported_result($req)
             while(($csvData = fgetcsv($csvFile, '1000', $delimiter )) !== FALSE){
                 
                 $csvData = array_map("utf8_encode", $csvData);
+
+                // return $csvData;
                 $fieldItems = count($csvData);
                 $indexCount = 0;
                 $res_info = [];
@@ -882,9 +906,28 @@ function sr_save_imported_result($req)
                             $d = str_replace('ï»¿"', '', key($res_info_data[0]));
                             $final_data = str_replace('"', '', $d );
 
-                            $res_info[] = [ $final_data => $data ];
+                            if(in_array(strtolower($final_data), $sub_data)){
+                                foreach($grades as $grade){
+                                    if($data >= $grade->grade_min_mark && $data <= $grade->grade_max_mark ){
+                                        $res_info[] = [ $final_data => $grade->grade_point];
+                                    }
+                                }
+                            }else{
+                                $res_info[] = [$final_data => $data];
+                            }
+    
+                            // $res_info[] = [ $final_data => $data ];
                         }else{
-                            $res_info[] = [trim($fieldTitle[$indexCount]) => $data];
+                            if(in_array(strtolower(trim($fieldTitle[$indexCount])), $sub_data)){
+                                foreach($grades as $grade){
+                                    if($data >= $grade->grade_min_mark && $data <= $grade->grade_max_mark ){
+                                        $res_info[] = [ trim($fieldTitle[$indexCount]) => $grade->grade_point];
+                                    }
+                                }
+                            }else{
+                                $res_info[] = [trim($fieldTitle[$indexCount]) => $data];
+                            }
+                            // $res_info[] = [trim($fieldTitle[$indexCount]) => $data];
                         }                                        
                         $indexCount++;
                     };
@@ -900,7 +943,7 @@ function sr_save_imported_result($req)
 
                 
                 foreach($sub_data as $sub){
-                    foreach($keys as $key){                        
+                    foreach($keys as $key){                      
                         if(strtolower(implode(" ",array_keys(($res_info[$key])))) == strtolower($sub)){
                             $sub_marks[] = ($res_info[$key]);
                             foreach($grades as $grade){
@@ -908,7 +951,23 @@ function sr_save_imported_result($req)
                                   
                                     $key_res = (implode(" ",array_keys(($res_info[$key]))));
                                     $sub_grade_point[] = [ $key_res => $grade->grade_point];
-                                    $grade_point[] = $grade->grade_point;      
+                                    $res_info[] = [ $key_res . '_grade' => $grade->grade_point];
+                                    foreach($fourthSubs as $fourth_sub){
+                                        if(strtolower($key_res) == strtolower($fourth_sub)){ 
+                                            $has_fourth_sub = true ;
+                                        }
+                                    };
+                                    $sub_grades[] = [$key_res => $grade->grade_title,];// To save subject wise grades
+                                    $sub_grade_points[] = [$key_res => $grade->grade_point,];// To save subject wise points  
+                                    
+                                    if($has_fourth_sub == true){
+                                        if( $grade->grade_point > $points_diff){
+                                            $grade->grade_point -= $points_diff;
+                                        }else{
+                                            $grade->grade_point = 0;
+                                        }
+                                    }
+                                    $grade_point[] = $grade->grade_point; // To cumulate points
                                 }
                             }      
                         }
@@ -931,6 +990,7 @@ function sr_save_imported_result($req)
                 if(!empty($grade_point)){
                     $sub_grade_total = array_sum($grade_point);
                     $items = count($grade_point);
+                    $has_fourth_sub == true ? $items -= 1 : '' ;
                     $cgpa = $sub_grade_total / $items;
                     $res_info[] = [ $show_results_in[0] => round($cgpa, 2) ];
                 }
@@ -942,10 +1002,13 @@ function sr_save_imported_result($req)
 
                 if($record[0]->count==0){
                     if(!empty($name) && !empty($info)) { 
+                        
                         // Insert Record
                         $wpdb->insert($result_tbl, array(
                             'res_info' => $info,
-                            'res_subject' => 'not published'
+                            'res_subject' => 'not published',
+                            'res_grade' => json_encode($sub_grades),
+                            'res_grade_point' => json_encode($sub_grade_points),
                         ));
 
                         if($wpdb->insert_id > 0){
@@ -1412,11 +1475,8 @@ function get_4th_sub()
     global $wpdb;
     $sub_tbl = $wpdb->prefix . 'std_res_beta_subject';
     $field = 'subject_name';
-
-    $subs = $wpdb->get_results( $wpdb->prepare( "SELECT {$field} FROM {$sub_tbl} where subject_info='4th'" ));
-
     $sub_data = [];
-
+    $subs = $wpdb->get_results( $wpdb->prepare( "SELECT {$field} FROM {$sub_tbl} where subject_info='4th'" ));
     foreach($subs as $sub){
         $sub_data[] = $sub->subject_name;
     }
@@ -1436,14 +1496,9 @@ function save_4th_sub($req)
 {
     global $wpdb;
     $requests = $req->get_params();
-    
-    // return $requests;
-
-
     $sub_tbl = $wpdb->prefix . 'std_res_beta_subject';
     $field = 'subject_name';
 
-    // $wpdb->query("TRUNCATE TABLE $sub_tbl");
     $wpdb->delete($sub_tbl, [
         'subject_info' => '4th',
     ] );
@@ -1666,20 +1721,20 @@ function get_config()
  * @since 1.0.0
  *
  */
-function check_4th_sub($subjects = array())
-{
-    $forth_sub = [];
-    $forth_subs = get_4th_sub();
-    foreach($subjects as $sub){
-        foreach($forth_subs as $subject){
-            if ($sub == $subject){
-                $forth_sub[] = $sub;
-            }
-        }
-    }
-    return $forth_sub;
+// function check_4th_sub($subjects = array())
+// {
+//     $forth_sub = [];
+//     $forth_subs = get_4th_sub();
+//     foreach($subjects as $sub){
+//         foreach($forth_subs as $subject){
+//             if ($sub == $subject){
+//                 $forth_sub[] = $sub;
+//             }
+//         }
+//     }
+//     return $forth_sub;
 
-}
+// }
 
 /**
  * 
