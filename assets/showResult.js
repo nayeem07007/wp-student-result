@@ -3,11 +3,6 @@ jQuery(document).ready(function ($) {
   // Hide fail msg
   $("#fail_msg").hide();
 
-  // Hide table view
-  // $(".resultView").hide();
-
-  $("#searchRes").attr("disabled", false); // delete it later
-
   // Initialize needed veriables.
   var api = api_base_url + "/wp-json/sr/v1/search/results";
   var examUrl = api_base_url + "/wp-json/sr/v1/exam";
@@ -17,7 +12,7 @@ jQuery(document).ready(function ($) {
   var results = null;
 
   // Disable submit button if input is empty
-  // $("#searchRes").attr("disabled", true); enable it
+  $("#searchRes").attr("disabled", true);
   // Disable validation if input roll is empty
   $("#sr_validate").attr("disabled", "disabled");
 
@@ -120,17 +115,15 @@ jQuery(document).ready(function ($) {
     var input = $(this).val();
     $("#fail_msg").hide();
 
-    // if (input == total) {
-    //   console.log("success!!!");
-    //   $("#fail_msg").hide();
-    //   $("#searchRes").attr("disabled", false);
-    // } else {
-    //   console.log("failed!!!");
-    //   $("#fail_msg").show();
-    //   $("#searchRes").attr("disabled", "disabled");
-    // }
-
-    $("#searchRes").attr("disabled", false); // delete it later
+    if (input == total) {
+      // console.log("success!!!");
+      $("#fail_msg").hide();
+      $("#searchRes").attr("disabled", false);
+    } else {
+      // console.log("failed!!!");
+      $("#fail_msg").show();
+      $("#searchRes").attr("disabled", "disabled");
+    }
   });
 
   // Printing result function
@@ -217,6 +210,17 @@ jQuery(document).ready(function ($) {
             );
             return;
           }
+          if (Object.keys(results[key]) == "gpa") {
+            console.log(results[key].gpa.toFixed(2));
+            $("#rtBody").append(
+              "<tr><th class='col-md-3' scope='row'>" +
+                Object.keys(results[key]) +
+                "</th><td class='col-md-3'>" +
+                results[key].gpa.toFixed(2) +
+                "</td></tr>"
+            );
+            return;
+          }
           $("#rtBody").append(
             "<tr><th class='col-md-9' scope='row'>" +
               Object.keys(results[key]) +
@@ -231,27 +235,7 @@ jQuery(document).ready(function ($) {
 
   // Print result call
   $("#prin_me_link").click(function () {
-    console.log("print clicked!!!");
     printDiv();
-    // printDiv("#resModalBody");
-
-    //Hide all other elements other than printarea.
-    // $(".resultView").printThis();
-    // $(".resultSearch").hide();
-    // $("#resDisplayModal").show();
-
-    // $("div:not(#resDisplayModal").hide(); // hide everything that isn't #myDiv
-    // $("#resDisplayModal").appendTo("body"); // move #myDiv up to the body
-    // window.print();
-
-    // printDiv("#resultView");
-    // window.open();
-    // window.document.write($(".resultView").html());
-    // window.print();
-    // setTimeout(function () {
-    //   window.close();
-    // }, 1000);
-    // return false;
   });
 
   // Reset form.
@@ -271,8 +255,7 @@ jQuery(document).ready(function ($) {
     $("#fail_msg").hide();
     $("#SearchResForm").trigger("reset");
     $("#sr_validate").attr("disabled", "disabled");
-    // $(".resultView").hide();
-    // $("#searchRes").attr("disabled", true); enable it later
+    $("#searchRes").attr("disabled", true);
     $("#rtBody").find("th").text("");
     $("#rtBody").find("td").text("");
   }

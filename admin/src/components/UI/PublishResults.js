@@ -57,10 +57,10 @@ const PublishResults = () => {
   });
 
   useEffect(() => {
-    console.log(Object.keys(availableResults));
+    // console.log(Object.keys(availableResults));
     let stdData = [];
     Object.keys(availableResults).map((key) => {
-      console.log(availableResults[key].class);
+      // console.log(availableResults[key].class);
       stdData.push(availableResults[key]);
     });
 

@@ -174,34 +174,6 @@ const Config = () => {
                 />{" "}
                 CGPA
               </div>
-              {/* <div className={classes.radio}>
-                <label>{"3 . "}</label>
-                <input
-                  type="radio"
-                  // onClick=""
-                  checked=""
-                  value="Mark"
-                  name="mark"
-                />{" "}
-                Mark
-                <input
-                  type="radio"
-                  // onClick=""
-                  checked=""
-                  value="GPA"
-                  name="gpa"
-                />{" "}
-                GPA
-                <input
-                  type="radio"
-                  // onClick=""
-                  checked=""
-                  value="Grade"
-                  name="grade"
-                />
-                {"  Choose result output options."}
-                Grade
-              </div> */}
             </div>
           </div>
           <CreateDept />
@@ -209,10 +181,10 @@ const Config = () => {
           {isSemester && <AssignSemester />}
           {isClass && <AssignClasses />}
           {isSemester && <AssignCourses />}
-          {isClass && <AssignSubjects />}
+          {/* {isClass && <AssignSubjects />} */}
           <AssignExams />
           <AssignGrade />
-          <Assign4thSubject />
+          {/* <Assign4thSubject /> */}
         </div>
       )}
     </Fragment>
